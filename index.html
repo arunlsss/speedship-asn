@@ -998,26 +998,26 @@ async function doSubmit() {
   if (validation) { closeModal('confirmModal'); showAlert('formAlert', validation); return; }
   closeModal('confirmModal');
   isSubmitting = true;
-  document.getElementById('asnPage').inert = true;
   const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก Sheets และ PDF...';
-  const doc = {
-    poNumber: document.getElementById('fPO').value.trim(),
-    expectedArrival: document.getElementById('fArrival').value,
-    senderCompany: document.getElementById('fSenderCompany').value.trim(),
-    senderAddress: document.getElementById('fSenderAddress').value.trim(),
-    senderName: document.getElementById('fSenderName').value.trim(),
-    senderPhone: document.getElementById('fSenderPhone').value.trim(),
-    remark: document.getElementById('fRemark').value.trim(),
-  };
-  const payload = { action:'submitASN', brand:currentBrand, direction:document.getElementById('fDirection').value, document:doc, lines:getLines(), respondEmail:getEmails().join(',') };
-  const fingerprint = JSON.stringify(payload);
-  if (!submissionAttempt || submissionAttempt.fingerprint !== fingerprint) {
-    submissionAttempt = { fingerprint, requestId:crypto.randomUUID() };
-  }
-  payload.requestId = submissionAttempt.requestId;
   try {
+    document.getElementById('asnPage').inert = true;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> กำลังบันทึก Sheets และ PDF...';
+    const doc = {
+      poNumber: document.getElementById('fPO').value.trim(),
+      expectedArrival: document.getElementById('fArrival').value,
+      senderCompany: document.getElementById('fSenderCompany').value.trim(),
+      senderAddress: document.getElementById('fSenderAddress').value.trim(),
+      senderName: document.getElementById('fSenderName').value.trim(),
+      senderPhone: document.getElementById('fSenderPhone').value.trim(),
+      remark: document.getElementById('fRemark').value.trim(),
+    };
+    const payload = { action:'submitASN', brand:currentBrand, direction:document.getElementById('fDirection').value, document:doc, lines:getLines(), respondEmail:getEmails().join(',') };
+    const fingerprint = JSON.stringify(payload);
+    if (!submissionAttempt || submissionAttempt.fingerprint !== fingerprint) {
+      submissionAttempt = { fingerprint, requestId:createSubmissionId() };
+    }
+    payload.requestId = submissionAttempt.requestId;
     const res = await gasPost(payload);
     if (res.success) {
       document.getElementById('successAsnId').textContent = res.fileName || res.asnId;
@@ -1120,16 +1120,47 @@ function validateForm() {
 // =============================================
 //  UTILITIES
 // =============================================
+function createSubmissionId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  if (typeof crypto === 'undefined' || typeof crypto.getRandomValues !== 'function') {
+    throw new Error('เบราว์เซอร์นี้ไม่รองรับการส่งข้อมูล กรุณาเปิดเว็บไซต์ผ่าน HTTPS ด้วยเบราว์เซอร์รุ่นล่าสุด');
+  }
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  return [hex.slice(0,8), hex.slice(8,12), hex.slice(12,16), hex.slice(16,20), hex.slice(20)].join('-');
+}
+
 async function gasPost(payload) {
   if (!GAS_URL || !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(GAS_URL)) {
     throw new Error('ผู้ดูแลยังไม่ได้ตั้งค่าระบบรับข้อมูล กรุณาติดต่อ Speedship');
   }
   const body = payload.action === 'login' ? payload : { ...payload, sessionToken:payload.sessionToken || sessionToken };
-  const response = await fetch(GAS_URL, {
-    method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่');
-  const res = await response.json();
+  const controller = new AbortController();
+  const timeoutMs = payload.action === 'submitASN' ? 90000 : 30000;
+  let timeout;
+  let res;
+  try {
+    const deadline = new Promise((_, reject) => {
+      timeout = setTimeout(() => {
+        reject(new Error(payload.action === 'submitASN'
+          ? 'ยังยืนยันการบันทึกไม่ได้ภายใน 90 วินาที กรุณาลองส่งอีกครั้งโดยไม่แก้ข้อมูล ระบบจะตรวจสอบรายการเดิมก่อนบันทึก'
+          : 'การเชื่อมต่อใช้เวลานานเกินไป กรุณาลองใหม่'));
+        controller.abort();
+      }, timeoutMs);
+    });
+    const request = (async () => {
+      const response = await fetch(GAS_URL, {
+        method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(body), signal:controller.signal,
+      });
+      if (!response.ok) throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่');
+      return response.json();
+    })();
+    res = await Promise.race([request, deadline]);
+  } finally {
+    clearTimeout(timeout);
+  }
   if (payload.action === 'login' && res.success) {
     if (!res.sessionToken) throw new Error('กรุณาอัปเดตระบบรับข้อมูลก่อนใช้งาน');
     sessionToken = res.sessionToken;
