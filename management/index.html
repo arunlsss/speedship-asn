@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ASN Management | Speedship Solution</title>
+  <link rel="stylesheet" href="/management/style.css">
+  <script src="/config.js" defer></script>
+  <script src="/management/app.js" defer></script>
+</head>
+<body>
+  <div class="language"><button id="languageButton" type="button">English</button></div>
+  <main id="loginView" class="login-view">
+    <section class="login-card">
+      <a href="/" class="login-brand"><img src="/assets/speedship-logo.png" alt="Speedship Solution"><span>Speedship Solution<small>ASN Management</small></span></a>
+      <span class="eyebrow" data-i18n="management">ฝ่ายจัดการ</span>
+      <h1 data-i18n="signInTitle">ดูแลทุกการรับเข้าและส่งออก</h1>
+      <p class="muted" data-i18n="signInNote">เข้าสู่ระบบด้วยบัญชีฝ่ายจัดการ</p>
+      <p id="setupNotice" class="notice" role="status" hidden></p>
+      <form id="loginForm">
+        <label for="username" data-i18n="username">ชื่อผู้ใช้</label>
+        <input id="username" name="username" autocomplete="username" maxlength="100" required>
+        <label for="password" data-i18n="password">รหัสผ่าน</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" maxlength="200" required>
+        <p id="loginError" class="error" role="alert" hidden></p>
+        <button id="loginButton" class="primary full" type="submit" data-i18n="signIn">เข้าสู่ระบบ</button>
+      </form>
+      <a class="back-link" href="/" data-i18n="backSubmission">กลับไปหน้าส่ง ASN</a>
+    </section>
+  </main>
+  <div id="dashboard" class="app" hidden>
+    <aside class="sidebar">
+      <a href="/" class="sidebar-brand"><img src="/assets/speedship-logo.png" alt="Speedship Solution"><span>Speedship<small>ASN Management</small></span></a>
+      <p class="nav-label" data-i18n="workspace">พื้นที่ทำงาน</p>
+      <a class="nav-item active" href="/management/" aria-current="page"><span class="nav-square"></span><span data-i18n="overview">ภาพรวม</span></a>
+      <a class="nav-item" href="/"><span class="nav-plus">+</span><span data-i18n="newASN">ส่ง ASN ใหม่</span></a>
+      <a class="nav-item" id="archiveLink" target="_blank" rel="noopener noreferrer"><span class="nav-folder"></span><span data-i18n="archive">โฟลเดอร์จัดเก็บ</span></a>
+      <div class="sidebar-bottom"><span class="timezone-dot"></span> Asia/Bangkok<br><small data-i18n="bangkokNote">วันที่ทั้งหมดใช้เวลาไทย</small></div>
+    </aside>
+    <main class="main">
+      <header class="page-header">
+        <div><span class="eyebrow">SPEEDSHIP OPERATIONS</span><h1 data-i18n="overviewTitle">ภาพรวม ASN</h1><p class="muted" data-i18n="overviewNote">ติดตามเอกสารรับเข้า ส่งออก และสถานะการแจ้งเตือน</p></div>
+        <div class="header-actions"><span id="managerName" class="manager"></span><button id="logoutButton" class="quiet" data-i18n="signOut">ออกจากระบบ</button></div>
+      </header>
+      <p id="dashboardError" class="error banner" role="alert" hidden></p>
+      <section class="filter-panel" aria-label="Filters">
+        <div class="filter-top"><div class="presets"><button data-period="month" class="selected" data-i18n="thisMonth">เดือนนี้</button><button data-period="today" data-i18n="today">วันนี้</button><button data-period="all" data-i18n="allDates">ทุกวันที่</button></div><button id="refreshButton" class="quiet" data-i18n="refresh">รีเฟรชข้อมูล</button></div>
+        <div class="filters">
+          <label><span data-i18n="fromDate">ตั้งแต่วันที่</span><input id="fromDate" type="date" aria-label="From date"></label>
+          <label><span data-i18n="toDate">ถึงวันที่</span><input id="toDate" type="date" aria-label="To date"></label>
+          <label><span data-i18n="brand">แบรนด์</span><select id="brandFilter"><option value="" data-i18n="allBrands">ทุกแบรนด์</option></select></label>
+          <label><span data-i18n="direction">ประเภท</span><select id="directionFilter"><option value="" data-i18n="allDirections">รับเข้าและส่งออก</option><option value="Inbound" data-i18n="inbound">รับเข้า</option><option value="Outbound" data-i18n="outbound">ส่งออก</option></select></label>
+          <label class="search-label"><span data-i18n="search">ค้นหาเอกสาร</span><input id="searchInput" type="search" data-placeholder="searchPlaceholder" placeholder="ชื่อเอกสาร, เลข ASN, PO" aria-label="Search documents"></label>
+        </div>
+      </section>
+      <section class="stats" aria-label="Summary">
+        <article class="stat"><span data-i18n="totalDocuments">เอกสารทั้งหมด</span><strong id="totalCount">0</strong><small data-i18n="filteredNote">ตามตัวกรองที่เลือก</small></article>
+        <article class="stat inbound-stat"><span data-i18n="inbound">รับเข้า</span><strong id="inboundCount">0</strong><small>Inbound</small></article>
+        <article class="stat outbound-stat"><span data-i18n="outbound">ส่งออก</span><strong id="outboundCount">0</strong><small>Outbound</small></article>
+        <article class="stat"><span data-i18n="attention">รายการที่ต้องตรวจสอบ</span><strong id="attentionCount">0</strong><small data-i18n="attentionNote">ไฟล์ยังไม่ครบ หรือแจ้งเตือนล้มเหลว/ไม่ทราบสถานะ</small></article>
+      </section>
+      <section class="insights">
+        <article class="panel chart-panel"><div class="panel-heading"><h2 data-i18n="dailyActivity">เอกสารรายวัน</h2><div class="legend"><span class="inbound-dot"></span><span data-i18n="inbound">รับเข้า</span><span class="outbound-dot"></span><span data-i18n="outbound">ส่งออก</span></div></div><p id="chartCaption" class="muted small"></p><div id="chart" role="img"></div></article>
+        <article class="panel notification-panel"><h2 data-i18n="notifications">การแจ้งเตือน</h2><div class="notification-row"><div><strong>LINE OA</strong><p id="lineConfiguration" class="muted small"></p></div><span id="lineConfigBadge" class="badge"></span></div><div class="notification-row"><div><strong data-i18n="email">อีเมล</strong><p data-i18n="emailConfiguration" class="muted small">สำเนาเอกสารตามอีเมลที่ระบุ</p></div><span id="emailConfigBadge" class="badge"></span></div><p class="notification-note" data-i18n="notificationNote">สถานะของแต่ละรายการอยู่ในตารางด้านล่าง การเปิดแจ้งเตือนจะมีผลกับรายการใหม่</p></article>
+      </section>
+      <section class="panel records-panel">
+        <div class="panel-heading"><div><h2 data-i18n="documents">รายการเอกสาร</h2><p id="resultsCaption" class="muted small" aria-live="polite"></p></div><button id="exportButton" class="quiet" data-i18n="export">ส่งออก CSV</button></div>
+        <div class="table-wrap"><table><thead><tr><th data-i18n="document">เอกสาร</th><th data-i18n="brand">แบรนด์</th><th data-i18n="direction">ประเภท</th><th data-i18n="date">วันที่ส่ง</th><th data-i18n="files">ไฟล์</th><th>LINE OA</th><th data-i18n="email">อีเมล</th><th data-i18n="details">รายละเอียด</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+        <div id="emptyState" class="empty" hidden><div class="empty-symbol"></div><h3 data-i18n="noDocuments">ไม่พบเอกสาร</h3><p class="muted" data-i18n="emptyNote">ลองเปลี่ยนช่วงวันที่ แบรนด์ หรือคำค้นหา</p></div>
+        <div class="table-footer"><span id="updatedAt" class="muted small"></span><div class="pagination"><button id="previousButton" class="quiet" data-i18n="previous">ก่อนหน้า</button><span id="pageCaption"></span><button id="nextButton" class="quiet" data-i18n="next">ถัดไป</button></div></div>
+      </section>
+      <footer class="footer"><span>Speedship Solution</span><span data-i18n="storageNote">เอกสารจัดเก็บใน Drive แยกตามแบรนด์และประเภท</span></footer>
+    </main>
+  </div>
+  <dialog id="detailDialog">
+    <div class="detail-header"><div><span class="eyebrow" data-i18n="documentDetails">รายละเอียดเอกสาร</span><h2 id="detailTitle"></h2></div><button id="closeDetailButton" class="close" aria-label="Close">×</button></div>
+    <div id="detailContent"></div>
+  </dialog>
+</body>
+</html>
