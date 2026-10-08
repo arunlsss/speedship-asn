@@ -36,11 +36,11 @@ The current master database and archive folder IDs are in `functions/.env.speeds
 
 **My Drive:** create an internal Google OAuth desktop client in this project and connect the existing archive owner with `scripts/connect-workspace.mjs`. The script first checks Cloud sign-in, then waits up to 15 minutes for the owner's Google approval. It verifies the approved account, puts refresh credentials directly in Secret Manager, and checks the master/template and archive access. A failed archive check does not discard an already saved owner connection. Do not paste credentials into chat, commit them, or put them in frontend config. The runtime reads only its own secret. Google Workspace may require administrator approval for Drive/Gmail scopes.
 
-After granting access or saving credentials, redeploy functions to pin the new secret version. In the management dashboard, run “ตรวจสอบการเชื่อมต่อ” before any real customer submission.
+After granting access or saving credentials, redeploy functions to pin the new secret version. The owner verified Google management sign-in and the “ตรวจสอบการเชื่อมต่อ” connection check on 8 October 2026.
 
 ## Notifications
 
-- Add the existing OA access token as a new version of `ASN_LINE_TOKEN` in Google Secret Manager. Set `ASN_LINE_TARGET_ID` and `ASN_LINE_ENABLED=true` in the functions environment file, then redeploy functions. Never put the token in the repository.
+- The owner requested that LINE notifications be retained. Run `node scripts/connect-line.mjs` in the owner's Terminal. Copy the old ASN Apps Script properties `LINE_CHANNEL_ACCESS_TOKEN` and `LINE_TARGET_ID` into its hidden prompts. It verifies the bot account, destination access and message format without sending a message, stores both values directly in Secret Manager (`ASN_LINE_TOKEN` and `ASN_LINE_TARGET_ID`), grants only the runtime secret access, and enables the local LINE flag. Redeploy functions only after setup succeeds. Neither token nor destination belongs in the repository or chat.
 - The LINE worker uses a persisted retry key, and reports `unknown` when acceptance cannot be confirmed.
 - Email uses the connected owner's Gmail API identity (`arun.l@speedshipsolution.com`). Gmail sending permission was approved and verified on 8 October 2026, and `ASN_EMAIL_ENABLED=true` is configured. Google accepted one separately approved test receipt sent only to the owner with a synthetic PDF. The owner confirmed receipt of the test email and its PDF attachment.
 
