@@ -30,7 +30,7 @@ The organization restricts IAM sharing outside its domain. The API uses Google's
 
 ## Google Drive connection
 
-The current master database and archive folder IDs are in `functions/.env.speedship-asn-cloud`. The archive is confirmed as My Drive, owned by `arun.l@speedshipsolution.com`, from the owner's Drive view on 8 October 2026. OAuth connection and live permissions still need to be verified.
+The current master database and archive folder IDs are in `functions/.env.speedship-asn-cloud`. The archive is confirmed as My Drive, owned by `arun.l@speedshipsolution.com`, from the owner's Drive view on 8 October 2026. The approved owner OAuth connection is saved in Secret Manager. Live master/template reads, native Sheets creation, PDF/Excel export, leading-zero SKU preservation and duplicate-file reuse were verified on 8 October 2026 using an isolated synthetic archive folder.
 
 **Shared drive:** grant `asn-runtime@speedship-asn-cloud.iam.gserviceaccount.com` read access to the master sheet and content creation access to the existing ASN archive. Keep `ASN_WORKSPACE_OAUTH` as `{}`. The backend refuses to use service-account file ownership in My Drive.
 
@@ -46,6 +46,6 @@ After granting access or saving credentials, redeploy functions to pin the new s
 
 ## Cutover
 
-Use the Firebase staging domain to verify customer login, an authorized controlled submission, native Sheet layout, PDF rendering, refresh recovery, management authorization and requested notification delivery. Then connect `asn.speedshipsolution.com` to Firebase Hosting and apply the DNS records supplied by Firebase. Keep the GitHub Pages version and old Apps Script running until cutover is verified. No production-domain change has been made by this migration package.
+Use the Firebase staging domain to verify customer login, an authorized controlled submission, native Sheet layout, PDF rendering, refresh recovery, management authorization and requested notification delivery. Then connect `asn.speedshipsolution.com` to Firebase Hosting and apply the DNS records supplied by Firebase. Keep the GitHub Pages version and old Apps Script running until cutover is verified. Firebase has registered the custom domain and supplied its DNS requirements in `DNS-CUTOVER.md`; public DNS still points to GitHub Pages. No production traffic change has been made.
 
 Historical Apps Script archives remain in Drive. The dashboard currently lists submissions created by this new Firebase backend; it does not claim to include historical archives.
