@@ -36,10 +36,10 @@ async function save(name,value) {
 async function main() {
   if(!process.stdin.isTTY)throw Error('Run this script in your own Terminal');
   stage='checking_cloud_sign_in';await command(['auth','print-access-token']);
-  console.log('Copy the existing ASN Apps Script properties into the prompts below.');
+  console.log('Use your own LINE Messaging API channel access token and the intended user/group/room ID.');
   console.log('The token and destination go directly to ASN Secret Manager, never to chat or files. No LINE message will be sent.');
-  stage='reading_line_token';const token=await hidden('Paste LINE_CHANNEL_ACCESS_TOKEN');
-  stage='reading_destination';const target=await hidden('Paste LINE_TARGET_ID');
+  stage='reading_line_token';const token=await hidden('Paste the LINE channel access token');
+  stage='reading_destination';const target=await hidden('Paste the destination LINE user/group/room ID');
   if(!token || token.length<20 || /\s/.test(token) || !/^[UCR][a-f0-9]{32}$/.test(target))throw Error('Invalid LINE credentials');
   const headers={Authorization:'Bearer '+token,'Content-Type':'application/json'};
   const check=async(path,body)=>{const response=await fetch('https://api.line.me'+path,{method:body?'POST':'GET',headers,...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(45000)});if(!response.ok)throw Error('LINE access check failed');};
