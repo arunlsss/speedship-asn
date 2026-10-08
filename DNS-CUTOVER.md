@@ -1,6 +1,6 @@
 # ASN domain preparation — 8 October 2026
 
-Firebase Hosting has registered `asn.speedshipsolution.com` for site `speedship-asn-cloud`. Public DNS still points to GitHub Pages. Nameservers are `ns13.domaincontrol.com` and `ns14.domaincontrol.com` (GoDaddy).
+Firebase Hosting has registered `asn.speedshipsolution.com` for site `speedship-asn-cloud`. The owner applied the Firebase CNAME on 8 October 2026. Both authoritative nameservers, Google DNS and Cloudflare DNS return `speedship-asn-cloud.web.app`; some cached DNS answers still point to GitHub Pages. Nameservers are `ns13.domaincontrol.com` and `ns14.domaincontrol.com` (GoDaddy).
 
 Before switching traffic, complete receipt notification configuration and verify the Firebase customer portal and Google management login. The staging portal is https://speedship-asn-cloud.web.app and management is https://speedship-asn-cloud.web.app/management.
 
@@ -30,4 +30,4 @@ Restore the `asn` CNAME to `arunlsss.github.io`. Keep the old GitHub Pages/Apps 
 
 Sources: [Firebase custom-domain setup](https://firebase.google.com/docs/hosting/custom-domain), [Firebase custom-domain API](https://firebase.google.com/docs/reference/hosting/rest/v1beta1/projects.sites.customDomains).
 
-Verification update: the owner added the certificate TXT record, and authoritative/public/Google DNS all return the exact expected value. Firebase's certificate DNS check has also detected it, and its certificate state is now `CERT_ACTIVE`. Receipt email delivery with PDF is owner-confirmed. The current CNAME still points to GitHub Pages. Complete the LINE delivery check before applying the traffic CNAME above.
+Verification update: the owner added the certificate TXT record, and authoritative/public/Google DNS all return the exact expected value. Firebase's certificate DNS check has also detected it, and its certificate state is now `CERT_ACTIVE`. Receipt email delivery with PDF and LINE test delivery are owner-confirmed. The owner applied the traffic CNAME above with a 1,800-second TTL, and both authoritative servers plus Google/Cloudflare public DNS show the correct target. Firebase's latest domain check still sees the old CNAME; live service is pending reconciliation. The hostname is authorized for Firebase login. Keep the old deployment available until live custom-domain checks pass.
