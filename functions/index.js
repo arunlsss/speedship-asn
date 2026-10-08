@@ -14,6 +14,7 @@ initializeApp();
 const db=getFirestore(),auth=getAuth(),store=createStore(db);
 const workspaceOAuth=defineSecret('ASN_WORKSPACE_OAUTH');
 const lineToken=defineSecret('ASN_LINE_TOKEN');
+const lineChannelSecret=defineSecret('ASN_LINE_CHANNEL_SECRET');
 const databaseId=defineString('ASN_DATABASE_ID',{default:'1Kgy8JoioazRK3jlWBqhu5XH0F-MhAmmtIq2O6Z4zZpM'});
 const archiveFolderId=defineString('ASN_ARCHIVE_FOLDER_ID',{default:'1MjEjuz758C27CzLQeZwxCUTbDbTpanzB'});
 const adminEmails=defineSecret('ASN_ADMIN_EMAILS');
@@ -40,11 +41,15 @@ function failure(res,err) {
 // Domain-restricted sharing disallows allUsers IAM bindings. The deployment
 // configures public transport with Cloud Run's invoker IAM check setting;
 // every protected action below still requires a verified Firebase identity.
-exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'512MiB',maxInstances:5,serviceAccount:runtimeServiceAccount,secrets:[workspaceOAuth,adminEmails],cors:false},async(req,res)=>{
+exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'512MiB',maxInstances:5,serviceAccount:runtimeServiceAccount,secrets:[workspaceOAuth,adminEmails,lineChannelSecret],cors:false},async(req,res)=>{
   res.set('Cache-Control','no-store');res.set('X-Content-Type-Options','nosniff');
   try {
     const path=req.path.replace(/^\/api/,'');
-    if(req.method==='GET' && path==='/health')return res.json({success:true,service:'Speedship ASN',version:3});
+    if(req.method==='GET' && path==='/health')return res.json({success:true,service:'Speedship ASN',version:3,lineGroupSetup:Boolean(lineChannelSecret.value())});
+    if(path==='/line-webhook') {
+      if(req.method!=='POST')fail('METHOD_NOT_ALLOWED','Method not allowed',405);
+      return res.json(await require('./lib/line-groups').receiveGroupConnection(req.rawBody,req.get('x-line-signature'),lineChannelSecret.value(),db));
+    }
     if(req.method==='GET' && path==='/download'){
       const user=await identity(req),job=await owned(req.query.id,user),pdf=req.query.type==='pdf',file=pdf?job.pdfId:job.sheetId;
       if(!file || (!pdf && !job.rendered))fail('NOT_READY','ไฟล์ยังไม่พร้อม',409);
@@ -84,6 +89,12 @@ exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'51
       return res.status(202).json(await store.accept(user.uid,p.requestId,data,user.customer,floor));
     }
     if(action==='getReceipt')return res.json(receipt(p.id,await owned(p.id,user)));
+    if(action==='getSubmission') {
+      if(!user.admin)fail('FORBIDDEN','เฉพาะผู้ดูแล',403);
+      const job=await owned(p.id,user),data=job.submission;
+      return res.json({...receipt(p.id,job),submission:{brand:data.brand,direction:data.direction,document:data.document,lines:data.lines}});
+    }
+    if(action==='reviewASN')return res.json(await store.review(p.id,user,p.decision,p.reason,p.requestId));
     if(action==='retryASN') {await owned(p.id,user);return res.json(await store.retry(p.id));}
     if(action==='mySubmissions' || action==='management') {
       if(action==='management' && !user.admin)fail('FORBIDDEN','เฉพาะผู้ดูแล',403);

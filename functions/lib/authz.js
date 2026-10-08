@@ -6,7 +6,7 @@ function isAdmin(decoded,emails) {
 async function resolveIdentity(bearer,{auth,workspace,adminEmails}) {
   if(!bearer?.startsWith('Bearer '))fail('AUTH_EXPIRED','กรุณาเข้าสู่ระบบใหม่',401);
   let decoded;try{decoded=await auth.verifyIdToken(bearer.slice(7),true);}catch(_){fail('AUTH_EXPIRED','กรุณาเข้าสู่ระบบใหม่',401);}
-  if(isAdmin(decoded,adminEmails))return {uid:decoded.uid,admin:true};
+  if(isAdmin(decoded,adminEmails))return {uid:decoded.uid,email:String(decoded.email).trim().toLowerCase(),admin:true};
   const masters=await workspace.masters(),customer=masters.customers.find(u=>u.active && uidFor(u.username)===decoded.uid);
   if(!customer)fail('AUTH_EXPIRED','กรุณาเข้าสู่ระบบใหม่',401);
   return {uid:decoded.uid,admin:false,customer,rules:masters.rules};

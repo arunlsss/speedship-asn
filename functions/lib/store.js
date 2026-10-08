@@ -1,5 +1,5 @@
 'use strict';
-const { hash, submissionKey, sequenceKey, bangkokDate, fail, receipt } = require('./core');
+const { hash, submissionKey, sequenceKey, bangkokDate, fail, receipt, text } = require('./core');
 const { randomUUID } = require('node:crypto');
 function createStore(db) {
   const refFor = id => db.collection('submissions').doc(id);
@@ -14,7 +14,7 @@ function createStore(db) {
       }
       const counter=db.collection('sequences').doc(sequenceKey(data.brand,data.direction,date)), c=await tx.get(counter);
       const sequence=Math.max(c.data()?.value || 0,sequenceFloor)+1, fileName=`${data.brand} ${date} ${String(sequence).padStart(3,'0')}`;
-      const now=Date.now(), d={ownerUid:uid,requestId,fingerprint,brand:data.brand,direction:data.direction,date,sequence,fileName,asnId:`${data.direction.toUpperCase()}-${date.replaceAll('-','')}-${hash(data.brand).slice(0,8)}-${String(sequence).padStart(3,'0')}`,customer:customer.customer,poNumber:data.document.poNumber,itemCount:data.lines.length,status:'queued',stage:'received',createdAt:now,updatedAt:now,attempt:0,generation:1,lineRetryKey:randomUUID(),emailStatus:'pending',lineStatus:'pending',submission:data};
+      const now=Date.now(), d={ownerUid:uid,requestId,fingerprint,brand:data.brand,direction:data.direction,date,sequence,fileName,asnId:`${data.direction.toUpperCase()}-${date.replaceAll('-','')}-${hash(data.brand).slice(0,8)}-${String(sequence).padStart(3,'0')}`,customer:customer.customer,poNumber:data.document.poNumber,itemCount:data.lines.length,status:'queued',reviewStatus:'pending',stage:'received',createdAt:now,updatedAt:now,attempt:0,generation:1,lineRetryKey:randomUUID(),emailStatus:'pending',lineStatus:'pending',submission:data};
       tx.set(counter,{value:sequence}); tx.create(ref,d); return receipt(id,d);
     });
   }
@@ -39,6 +39,23 @@ function createStore(db) {
     const ref=db.collection('loginLimits').doc(hash(key));
     await db.runTransaction(async tx=>{const snap=await tx.get(ref),d=snap.data(),now=Date.now(),within=d && d.until>now;if(within && d.count>=10)fail('RATE_LIMIT','กรุณารอ 15 นาที ก่อนลองเข้าสู่ระบบใหม่',429);tx.set(ref,{count:within?d.count+1:1,until:within?d.until:now+15*60000});});
   }
-  return {accept,claim,update,retry,loginLimit,refFor};
+  async function review(id,user,decision,reason,requestId) {
+    if(!user?.admin || !user.uid)fail('FORBIDDEN','เฉพาะผู้ดูแล',403);
+    if(!/^[a-f0-9]{64}$/.test(id || ''))fail('NOT_FOUND','ไม่พบรายการ',404);
+    if(!['confirmed','rejected'].includes(decision))fail('VALIDATION','กรุณาเลือก Confirm หรือ Reject');
+    if(!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(String(requestId || '')))fail('VALIDATION','Invalid review ID');
+    const note=text(reason,1000);
+    if(decision==='rejected' && !note)fail('VALIDATION','กรุณาระบุเหตุผลที่ปฏิเสธ');
+    return db.runTransaction(async tx=>{
+      const ref=refFor(id),snap=await tx.get(ref);if(!snap.exists)fail('NOT_FOUND','ไม่พบรายการ',404);
+      const d=snap.data();
+      if(d.reviewRequestId===requestId && d.reviewedByUid===user.uid && d.reviewStatus===decision && d.reviewReason===note)return receipt(id,d);
+      if((d.reviewStatus || 'pending')!=='pending')fail('ALREADY_REVIEWED','รายการนี้ได้รับการตรวจสอบแล้ว กรุณาอัปเดตข้อมูล',409);
+      if(d.status!=='saved' || !d.rendered || !d.sheetId || !d.pdfId)fail('NOT_READY','กรุณารอให้ Sheets และ PDF พร้อมก่อนตรวจสอบ',409);
+      const now=Date.now(),changes={reviewStatus:decision,reviewReason:note,reviewedAt:now,reviewedBy:user.email || user.uid,reviewedByUid:user.uid,reviewRequestId:requestId,updatedAt:now};
+      tx.update(ref,changes);return receipt(id,{...d,...changes});
+    });
+  }
+  return {accept,claim,update,retry,review,loginLimit,refFor};
 }
 module.exports={createStore};

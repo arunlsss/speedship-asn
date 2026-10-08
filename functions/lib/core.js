@@ -88,6 +88,6 @@ function bangkokDate(now = new Date()) { const parts = new Intl.DateTimeFormat('
 const submissionKey = (uid,requestId) => hash(uid+':'+requestId);
 const sequenceKey = (brand,direction,date) => hash(JSON.stringify([brand,direction,date]));
 function receipt(id, d) {
-  return {success:true,id,requestId:d.requestId,status:d.status,stage:d.stage,fileName:d.fileName,asnId:d.asnId,brand:d.brand,direction:d.direction,poNumber:d.poNumber,customer:d.customer,createdAt:d.createdAt,updatedAt:d.updatedAt,errorCode:d.errorCode || '',message:d.message || '',hasSheets:Boolean(d.sheetId && d.rendered),hasPdf:Boolean(d.pdfId),emailStatus:d.emailStatus || 'pending',lineStatus:d.lineStatus || 'pending',itemCount:d.itemCount};
+  return {success:true,id,requestId:d.requestId,status:d.status,stage:d.stage,fileName:d.fileName,asnId:d.asnId,brand:d.brand,direction:d.direction,poNumber:d.poNumber,customer:d.customer,createdAt:d.createdAt,updatedAt:d.updatedAt,errorCode:d.errorCode || '',message:d.message || '',hasSheets:Boolean(d.sheetId && d.rendered),hasPdf:Boolean(d.pdfId),emailStatus:d.emailStatus || 'pending',lineStatus:d.lineStatus || 'pending',itemCount:d.itemCount,reviewStatus:d.reviewStatus || 'pending',reviewReason:d.reviewReason || '',reviewedAt:d.reviewedAt || null,reviewedBy:d.reviewedBy || ''};
 }
 module.exports = {AppError,fail,hash,uidFor,text,truth,split,samePassword,emails,customerRows,ruleRows,skuRows,validate,authorize,bangkokDate,submissionKey,sequenceKey,receipt,BRAND_HEADERS};

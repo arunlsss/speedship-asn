@@ -1193,6 +1193,7 @@ function renderReceipts(rows) {
     const title = document.createElement('strong'); title.textContent = row.fileName;card.appendChild(title);
     const status = document.createElement('p');status.textContent = row.direction+' · '+(STAGE_LABELS[row.stage] || STATUS_LABELS[row.status])+' · LINE: '+notificationLabel(row.lineStatus);card.appendChild(status);
     if (row.message) { const message=document.createElement('p');message.textContent=row.message;card.appendChild(message); }
+    const review=document.createElement('p');review.textContent='ผลการตรวจสอบ: '+({pending:'รอตรวจสอบ',confirmed:'ยืนยันแล้ว',rejected:'ปฏิเสธ'}[row.reviewStatus || 'pending'])+(row.reviewReason?' · '+row.reviewReason:'');card.appendChild(review);
     const actions = document.createElement('div');actions.className='receipt-actions';
     if(row.status==='failed') {
       const button=document.createElement('button');button.className='btn btn-outline btn-sm';button.textContent='ดำเนินการต่อ';

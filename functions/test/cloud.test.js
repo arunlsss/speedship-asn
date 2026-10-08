@@ -74,3 +74,53 @@ test('receipt response never includes payload, owner, fingerprint, lease or auth
   const h=workerFixture(),r=await h.accept();const record=h.docs.get('submissions/'+r.id);const publicReceipt=core.receipt(r.id,record);for(const key of ['submission','ownerUid','fingerprint','leaseToken','lineRetryKey','password','fixedEmails'])assert.equal(Object.hasOwn(publicReceipt,key),false);
 });
 test('login limiter rejects the eleventh request in its time window',async()=>{const {db}=memoryDb(),store=createStore(db);for(let i=0;i<10;i++)await store.loginLimit('example');await assert.rejects(store.loginLimit('example'),{code:'RATE_LIMIT'});});
+const manager={uid:'manager-1',email:'manager@example.test',admin:true};
+async function reviewFixture({legacy=false,ready=true}={}){
+  const {db,docs}=memoryDb(),store=createStore(db),p=payload();
+  const accepted=await store.accept(core.uidFor('demo'),p.requestId,core.validate(p,{}),customer);
+  const d=docs.get('submissions/'+accepted.id);Object.assign(d,{status:ready?'saved':'processing',rendered:ready,sheetId:ready?'sheet-1':null,pdfId:ready?'pdf-1':null,emailStatus:'sent',lineStatus:'sent'});if(legacy)delete d.reviewStatus;
+  return {store,docs,id:accepted.id};
+}
+test('ASN review requires an administrator, valid decision/request and a rejection reason',async()=>{
+  const h=await reviewFixture(),before=structuredClone(h.docs.get('submissions/'+h.id));
+  for(const [actor,decision,reason,requestId,code] of [[{uid:'customer',admin:false},'confirmed','',randomUUID(),'FORBIDDEN'],[manager,'invalid','',randomUUID(),'VALIDATION'],[manager,'confirmed','','bad','VALIDATION'],[manager,'rejected','  ',randomUUID(),'VALIDATION'],[manager,'rejected','x'.repeat(1001),randomUUID(),'VALIDATION']])await assert.rejects(h.store.review(h.id,actor,decision,reason,requestId),{code});
+  assert.deepEqual(h.docs.get('submissions/'+h.id),before);
+});
+test('ASN review waits for ready files and treats older saved records as pending',async()=>{
+  const busy=await reviewFixture({ready:false});await assert.rejects(busy.store.review(busy.id,manager,'confirmed','',randomUUID()),{code:'NOT_READY'});
+  const legacy=await reviewFixture({legacy:true}),r=await legacy.store.review(legacy.id,manager,'confirmed','Checked',randomUUID());
+  assert.equal(r.reviewStatus,'confirmed');assert.equal(r.status,'saved');assert.equal(r.reviewedBy,manager.email);assert.ok(r.reviewedAt);assert.equal(r.hasPdf,true);assert.equal(r.hasSheets,true);assert.equal(r.reviewedByUid,undefined);assert.equal(r.reviewRequestId,undefined);
+});
+test('rejection preserves files and delivery state and exposes the reason in the receipt',async()=>{
+  const h=await reviewFixture(),r=await h.store.review(h.id,manager,'rejected','  Delivery date needs correction  ',randomUUID());
+  assert.equal(r.reviewStatus,'rejected');assert.equal(r.reviewReason,'Delivery date needs correction');assert.equal(r.emailStatus,'sent');assert.equal(r.lineStatus,'sent');assert.equal(r.status,'saved');assert.equal(h.docs.get('submissions/'+h.id).pdfId,'pdf-1');
+});
+test('lost review responses replay the same decision without changing its audit record',async()=>{
+  const h=await reviewFixture(),requestId=randomUUID(),first=await h.store.review(h.id,manager,'confirmed','Checked',requestId);
+  const retry=await h.store.review(h.id,manager,'confirmed','Checked',requestId);assert.deepEqual(retry,first);
+  await assert.rejects(h.store.review(h.id,manager,'rejected','Changed',randomUUID()),{code:'ALREADY_REVIEWED'});
+  await assert.rejects(h.store.review(h.id,{...manager,uid:'manager-2'},'confirmed','Checked',requestId),{code:'ALREADY_REVIEWED'});
+  assert.equal(h.docs.get('submissions/'+h.id).reviewedByUid,manager.uid);
+});
+test('concurrent managers cannot overwrite each other\'s ASN decision',async()=>{
+  const h=await reviewFixture(),results=await Promise.allSettled([h.store.review(h.id,manager,'confirmed','',randomUUID()),h.store.review(h.id,{...manager,uid:'manager-2'},'rejected','Mismatch',randomUUID())]);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal(results.find(r=>r.status==='rejected').reason.code,'ALREADY_REVIEWED');
+});
+const {receiveGroupConnection}=require('../lib/line-groups');
+const {createHmac}=require('node:crypto');
+const channelSecret='fixture-secret-only',connectionCode='1'.repeat(32),groupId='C'+'2'.repeat(32);
+function signedGroupEvent(overrides={}){const body=Buffer.from(JSON.stringify({events:[{type:'message',timestamp:Date.now(),source:{type:'group',groupId},message:{type:'text',text:'ASN-CONNECT '+connectionCode},...overrides}]}));return {body,signature:createHmac('sha256',channelSecret).update(body).digest('base64')};}
+test('group connection refuses unsigned or tampered webhook events',async()=>{
+  const {db,docs}=memoryDb(),{body,signature}=signedGroupEvent();await assert.rejects(receiveGroupConnection(body,'bad',channelSecret,db),{code:'WEBHOOK_SIGNATURE'});await assert.rejects(receiveGroupConnection(Buffer.concat([body,Buffer.from(' ')]),signature,channelSecret,db),{code:'WEBHOOK_SIGNATURE'});assert.equal(docs.size,0);
+});
+test('group connection accepts LINE verification and ignores ordinary messages without storing chat',async()=>{
+  const {db,docs}=memoryDb(),empty=Buffer.from('{"events":[]}');assert.deepEqual(await receiveGroupConnection(empty,createHmac('sha256',channelSecret).update(empty).digest('base64'),channelSecret,db),{success:true});const {body,signature}=signedGroupEvent({message:{type:'text',text:'ordinary private conversation'}});await receiveGroupConnection(body,signature,channelSecret,db);assert.equal(docs.size,0);
+});
+test('signed group setup binds only the pending one-time connection and preserves the first group',async()=>{
+  const {db,docs}=memoryDb(),path='lineGroupConnections/'+core.hash(connectionCode);docs.set(path,{state:'pending',expiresAt:Date.now()+60000});const event=signedGroupEvent();await receiveGroupConnection(event.body,event.signature,channelSecret,db);assert.equal(docs.get(path).groupId,groupId);assert.equal(docs.get(path).state,'captured');assert.equal(docs.get(path).message,undefined);
+  const second=signedGroupEvent({source:{type:'group',groupId:'C'+'3'.repeat(32)}});await receiveGroupConnection(second.body,second.signature,channelSecret,db);assert.equal(docs.get(path).groupId,groupId);
+});
+test('expired registrations, old events and direct-account messages cannot connect a group',async()=>{
+  const {db,docs}=memoryDb(),path='lineGroupConnections/'+core.hash(connectionCode);docs.set(path,{state:'pending',expiresAt:Date.now()-1});const event=signedGroupEvent();await receiveGroupConnection(event.body,event.signature,channelSecret,db);assert.equal(docs.get(path).state,'pending');docs.set(path,{state:'pending',expiresAt:Date.now()+60000});
+  for(const overrides of [{timestamp:Date.now()-10*60*1000},{source:{type:'user',userId:'U'+'2'.repeat(32)}}]){const e=signedGroupEvent(overrides);await receiveGroupConnection(e.body,e.signature,channelSecret,db);assert.equal(docs.get(path).state,'pending');}
+});
