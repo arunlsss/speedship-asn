@@ -2,6 +2,7 @@
 const { google } = require('googleapis');
 const { Readable } = require('node:stream');
 const { fail, customerRows, ruleRows, skuRows } = require('./core');
+const {disposition}=require('./filenames');
 const SCOPES=['https://www.googleapis.com/auth/drive','https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/gmail.send'];
 const quote = s => String(s).replaceAll('\\','\\\\').replaceAll("'","\\'");
 const pause = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -123,9 +124,9 @@ function createWorkspace(config, credentialJson) {
     const result=mime==='application/pdf'?await drive.files.get({fileId:id,alt:'media',supportsAllDrives:true},{...options,responseType:'arraybuffer'}):await drive.files.export({fileId:id,mimeType:mime},{...options,responseType:'arraybuffer'});
     return Buffer.from(result.data);
   }
-  async function sendEmail(to,subject,body,pdf) {
+  async function sendEmail(to,subject,body,pdf,fileName='ASN') {
     const boundary='asn-'+require('node:crypto').randomUUID();
-    const raw=[`To: ${to.join(',')}`,`Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,'MIME-Version: 1.0',`Content-Type: multipart/mixed; boundary="${boundary}"`,'',`--${boundary}`,'Content-Type: text/plain; charset=UTF-8','Content-Transfer-Encoding: base64','',Buffer.from(body).toString('base64'),`--${boundary}`,'Content-Type: application/pdf','Content-Disposition: attachment; filename="ASN.pdf"','Content-Transfer-Encoding: base64','',pdf.toString('base64').match(/.{1,76}/g).join('\r\n'),`--${boundary}--`].join('\r\n');
+    const raw=[`To: ${to.join(',')}`,`Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`,'MIME-Version: 1.0',`Content-Type: multipart/mixed; boundary="${boundary}"`,'',`--${boundary}`,'Content-Type: text/plain; charset=UTF-8','Content-Transfer-Encoding: base64','',Buffer.from(body).toString('base64'),`--${boundary}`,'Content-Type: application/pdf','Content-Disposition: '+disposition(fileName,'pdf'),'Content-Transfer-Encoding: base64','',pdf.toString('base64').match(/.{1,76}/g).join('\r\n'),`--${boundary}--`].join('\r\n');
     await gmail.users.messages.send({userId:'me',requestBody:{raw:Buffer.from(raw).toString('base64url')}},options);
   }
   return {masters,skus,preflight,archiveFolder,sequenceFloor,ensureFile,render,exportPdf,download,sendEmail};

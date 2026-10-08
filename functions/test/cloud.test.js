@@ -64,6 +64,23 @@ function workerFixture(){
 test('worker saves Sheets/PDF before notifications and replay does not create files or send twice',async()=>{
   const h=workerFixture(),r=await h.accept();await processSubmission(r.id,1,h.deps);let job=h.docs.get('submissions/'+r.id);assert.equal(job.status,'saved');assert.equal(job.lineStatus,'sent');assert.equal(job.emailStatus,'sent');assert.equal(h.files.size,2);await processSubmission(r.id,1,h.deps);assert.deepEqual(h.counts,{render:1,pdf:1,email:1,line:1});
 });
+test('worker sends an ASN review card and passes the receipt name to the email attachment',async()=>{
+  const h=workerFixture(),r=await h.accept();let mailArgs,lineMessage;
+  h.workspace.sendEmail=async(...args)=>{mailArgs=args;};h.deps.line={send:async message=>{lineMessage=message;}};
+  await processSubmission(r.id,1,h.deps);
+  assert.equal(mailArgs[4],r.fileName);assert.equal(lineMessage.type,'flex');
+  const buttons=lineMessage.contents.footer.contents.filter(x=>x.type==='button');
+  assert.deepEqual(buttons.map(b=>b.action.label),['ตรวจสอบรายละเอียด','ยืนยัน ASN','ปฏิเสธ ASN']);
+  for(const button of buttons){const url=new URL(button.action.uri);assert.equal(url.origin,'https://asn.speedshipsolution.com');assert.equal(url.pathname,'/management');assert.equal(url.searchParams.get('asn'),r.id);assert.equal(url.searchParams.get('openExternalBrowser'),'1');}
+  assert.equal(new URL(buttons[1].action.uri).searchParams.get('review'),'confirmed');assert.equal(new URL(buttons[2].action.uri).searchParams.get('review'),'rejected');
+  assert.equal(JSON.stringify(lineMessage).includes('ops@example.test'),false);
+});
+test('LINE push carries the card and retains idempotent retry handling',async t=>{
+  const {createLine}=require('../lib/worker'),message=require('../lib/line-message').asnMessage({id:'f'.repeat(64),fileName:'Example 2026-10-08 001',direction:'Inbound',brand:'Example',itemCount:1});let sent;
+  t.mock.method(global,'fetch',async(url,options)=>{sent=options;return {ok:false,status:409,headers:new Headers({'x-line-accepted-request-id':'accepted'})};});
+  await createLine('synthetic-token','synthetic-target').send(message,'retry-id');
+  assert.equal(sent.headers['X-Line-Retry-Key'],'retry-id');assert.deepEqual(JSON.parse(sent.body).messages,[message]);
+});
 test('PDF failure preserves the Sheet, retry reuses it and completes the original receipt',async()=>{
   const h=workerFixture(),r=await h.accept();h.setPdfFail(true);await processSubmission(r.id,1,h.deps);const before=h.docs.get('submissions/'+r.id);assert.equal(before.status,'failed');assert.equal(h.files.size,1);assert.equal(h.counts.email,0);h.setPdfFail(false);await h.store.retry(r.id);await processSubmission(r.id,2,h.deps);const after=h.docs.get('submissions/'+r.id);assert.equal(after.status,'saved');assert.equal(after.sheetId,before.sheetId);assert.equal(after.fileName,before.fileName);assert.equal(h.files.size,2);assert.equal(h.counts.render,1);
 });

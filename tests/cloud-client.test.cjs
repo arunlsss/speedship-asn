@@ -11,7 +11,7 @@ function harness(html,cloud){
   window.ASNCloud=cloud;window.ASN_CONFIG={backend:'firebase'};window.scrollTo=()=>{};
   for(const select of document.querySelectorAll('select'))Object.defineProperty(select,'value',{value:select.querySelector('option')?.getAttribute('value') ?? select.querySelector('option')?.textContent ?? '',writable:true,configurable:true});
   const storage=new Map();
-  const context=vm.createContext({window,document,console,crypto:webcrypto,Intl,Date,Uint8Array,AbortController,sessionStorage:{getItem:k=>storage.get(k) || null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},setInterval:()=>1,setTimeout:(fn)=>{queueMicrotask(fn);return 1;},clearTimeout:()=>{},flatpickr:()=>{},XLSX:{}});
+  const context=vm.createContext({window,document,console,crypto:webcrypto,Intl,Date,Uint8Array,AbortController,URLSearchParams,sessionStorage:{getItem:k=>storage.get(k) || null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},setInterval:()=>1,setTimeout:(fn)=>{queueMicrotask(fn);return 1;},clearTimeout:()=>{},flatpickr:()=>{},XLSX:{}});
   return {context,document,window,storage};
 }
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
@@ -43,11 +43,26 @@ test('management login, filters, counts and untrusted text render safely',async(
   await h.document.getElementById('signIn').onclick();assert.equal(h.document.getElementById('dashboard').hidden,false);assert.equal(h.document.getElementById('rows').children.length,2);assert.equal(h.document.getElementById('total').textContent,'2');assert.equal(h.document.getElementById('attention').textContent,'1');assert.equal(h.document.getElementById('rows').querySelectorAll('img').length,0);
   h.document.getElementById('search').value='PO-002';h.context.render();assert.equal(h.document.getElementById('rows').children.length,1);assert.match(h.document.getElementById('rows').textContent,/Brand B/);
 });
-function reviewHarness(handler){
+function reviewHarness(handler,search=''){
   const row={success:true,id:'c'.repeat(64),fileName:'Review ASN',customer:'Example',brand:'Brand A',poNumber:'001',direction:'Inbound',status:'saved',stage:'complete',createdAt:Date.now(),hasSheets:true,hasPdf:true,reviewStatus:'pending',emailStatus:'sent',lineStatus:'sent',submission:{document:{poNumber:'001',senderCompany:'Example',remark:'<img src=x onerror=alert(1)>'},lines:[{sku:'00001',name:'<script>bad</script>',qtyCarton:1,qtyPiece:12}]}};
   const calls=[],auth={currentUser:null},cloud={ready:Promise.resolve(auth),adminLogin:async()=>auth.currentUser={uid:'admin'},post:async p=>{calls.push(p);if(p.action==='session')return {success:true,admin:true};if(p.action==='management')return {success:true,submissions:[row],next:null};if(p.action==='getSubmission')return row;if(p.action==='reviewASN')return handler(p,row);},download:async()=>{}};
-  const h=harness(fs.readFileSync(path.join(root,'public/management.html'),'utf8'),cloud);vm.runInContext(fs.readFileSync(path.join(root,'public/assets/management.js'),'utf8'),h.context);return {...h,calls,row};
+  const h=harness(fs.readFileSync(path.join(root,'public/management.html'),'utf8'),cloud);h.window.location={search};vm.runInContext(fs.readFileSync(path.join(root,'public/assets/management.js'),'utf8'),h.context);return {...h,calls,row};
 }
+test('LINE links open the exact ASN only after manager sign-in and never auto-confirm',async()=>{
+ const h=reviewHarness(async()=>{throw Error('No automatic decision allowed');},'?asn='+('c'.repeat(64))+'&review=confirmed');
+ await Promise.resolve();assert.equal(h.calls.filter(p=>p.action==='getSubmission').length,0);
+ await h.document.getElementById('signIn').onclick();
+ assert.equal(h.document.getElementById('reviewOverlay').hidden,false);assert.equal(h.calls.find(p=>p.action==='getSubmission').id,h.row.id);
+ assert.equal(h.calls.filter(p=>p.action==='reviewASN').length,0);assert.match(h.document.getElementById('reviewDecision').textContent,/กดยืนยัน/);
+});
+test('LINE reject links require a reason and stale links show the existing decision',async()=>{
+ const h=reviewHarness(async(p,r)=>({...r,reviewStatus:p.decision,reviewReason:p.reason}),'?asn='+('c'.repeat(64))+'&review=rejected');
+ await h.document.getElementById('signIn').onclick();assert.match(h.document.getElementById('reviewDecision').textContent,/ระบุเหตุผล/);
+ await h.document.getElementById('rejectASN').onclick();assert.equal(h.calls.filter(p=>p.action==='reviewASN').length,0);
+ h.document.getElementById('reviewReason').value='Incorrect quantity';await h.document.getElementById('rejectASN').onclick();
+ h.row.reviewStatus='rejected';h.row.reviewReason='Incorrect quantity';await h.context.openReview(h.row,'confirmed');
+ assert.equal(h.document.getElementById('confirmASN').disabled,true);assert.match(h.document.getElementById('reviewDecision').textContent,/Incorrect quantity/);
+});
 test('management reviews details safely and persists confirmation with visible audit',async()=>{
   const h=reviewHarness(async(p,r)=>({...r,reviewStatus:p.decision,reviewReason:p.reason,reviewedBy:'manager@example.test',reviewedAt:Date.now()}));
   await h.document.getElementById('signIn').onclick();await h.context.openReview(h.row,'confirmed');assert.equal(h.document.getElementById('reviewItems').querySelectorAll('script').length,0);assert.equal(h.document.getElementById('reviewSummary').querySelectorAll('img').length,0);assert.equal(h.document.getElementById('confirmASN').disabled,false);

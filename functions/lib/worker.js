@@ -1,5 +1,6 @@
 'use strict';
 const {emails,authorize,fail} = require('./core');
+const {asnMessage}=require('./line-message');
 async function processSubmission(id,generation,{store,workspace,line,emailEnabled,lineEnabled}) {
   const job=await store.claim(id,generation);if(!job)return;
   const token=job.leaseToken;
@@ -21,7 +22,7 @@ async function processSubmission(id,generation,{store,workspace,line,emailEnable
       else {
         // Record ambiguous delivery before sending. A crash must never resend an email silently.
         await save({emailStatus:'unknown'});
-        try {await workspace.sendEmail(recipients,'Speedship '+job.fileName,summary,await workspace.download(job.pdfId,'application/pdf'));await save({emailStatus:'sent'});}
+        try {await workspace.sendEmail(recipients,'Speedship '+job.fileName,summary,await workspace.download(job.pdfId,'application/pdf'),job.fileName);await save({emailStatus:'sent'});}
         catch(_){await save({emailStatus:'unknown'});}
       }
     }
@@ -32,7 +33,7 @@ async function processSubmission(id,generation,{store,workspace,line,emailEnable
         const validRetry = Date.now()-(job.lineStartedAt || Date.now())<23*60*60*1000;
         if(validRetry) {
           await save({lineStatus:'unknown',lineStartedAt:job.lineStartedAt || Date.now()});
-          try {await line.send(summary,job.lineRetryKey);await save({lineStatus:'sent'});}catch(_){await save({lineStatus:'unknown'});}
+          try {await line.send(asnMessage(job),job.lineRetryKey);await save({lineStatus:'sent'});}catch(_){await save({lineStatus:'unknown'});}
         }
       }
     }
@@ -47,8 +48,8 @@ async function processSubmission(id,generation,{store,workspace,line,emailEnable
 }
 function createLine(token,target) {
   if(!token || !target)return null;
-  return {send:async(text,retryKey)=>{
-    const response=await fetch('https://api.line.me/v2/bot/message/push',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,'X-Line-Retry-Key':retryKey},body:JSON.stringify({to:target,messages:[{type:'text',text}]}),signal:AbortSignal.timeout(30000)});
+  return {send:async(message,retryKey)=>{
+    const response=await fetch('https://api.line.me/v2/bot/message/push',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,'X-Line-Retry-Key':retryKey},body:JSON.stringify({to:target,messages:[typeof message==='string'?{type:'text',text:message}:message]}),signal:AbortSignal.timeout(30000)});
     // LINE 409 with an accepted request ID means the same retry key was already accepted.
     if(response.ok || (response.status===409 && response.headers.get('x-line-accepted-request-id')))return;
     throw Error('LINE delivery unconfirmed');

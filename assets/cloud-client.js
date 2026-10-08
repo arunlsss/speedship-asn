@@ -1,5 +1,6 @@
 import {initializeApp} from 'firebase/app';
 import {getAuth,setPersistence,browserSessionPersistence,signInWithCustomToken,signInWithPopup,GoogleAuthProvider,signOut} from 'firebase/auth';
+import {downloadFilename} from './download-name.mjs';
 const config=window.ASN_CONFIG || {};
 const ready=(async()=>{
   const firebaseConfig=config.firebaseConfig || await (await fetch('/__/firebase/init.json',{signal:AbortSignal.timeout(15000)})).json();
@@ -23,5 +24,5 @@ window.ASNCloud={ready,post:request,
   login:async(username,password)=>{const result=await request({action:'login',username,password});if(result.success)await signInWithCustomToken(await ready,result.customToken);delete result.customToken;return result;},
   adminLogin:async()=>signInWithPopup(await ready,new GoogleAuthProvider()),
   logout:async()=>signOut(await ready),
-  download:async(id,type)=>{const auth=await ready,token=await auth.currentUser?.getIdToken();if(!token)throw Error('กรุณาเข้าสู่ระบบใหม่');const response=await fetch(`/api/download?id=${encodeURIComponent(id)}&type=${type}`,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(60000)});if(!response.ok){const result=await response.json();throw Error(result.message || 'ดาวน์โหลดไม่สำเร็จ');}const blob=await response.blob(),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`ASN.${type==='pdf'?'pdf':'xlsx'}`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  download:async(id,type)=>{const auth=await ready,token=await auth.currentUser?.getIdToken();if(!token)throw Error('กรุณาเข้าสู่ระบบใหม่');const response=await fetch(`/api/download?id=${encodeURIComponent(id)}&type=${type}`,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(60000)});if(!response.ok){const result=await response.json();throw Error(result.message || 'ดาวน์โหลดไม่สำเร็จ');}const blob=await response.blob(),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=downloadFilename(response.headers.get('Content-Disposition'),type);link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 };

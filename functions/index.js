@@ -9,6 +9,7 @@ const {createWorkspace}=require('./lib/workspace');
 const {createStore}=require('./lib/store');
 const {processSubmission,createLine}=require('./lib/worker');
 const {resolveIdentity,requireOwned}=require('./lib/authz');
+const {disposition}=require('./lib/filenames');
 const {AppError,fail,text,hash,uidFor,samePassword,authorize,validate,receipt,bangkokDate,submissionKey}=require('./lib/core');
 initializeApp();
 const db=getFirestore(),auth=getAuth(),store=createStore(db);
@@ -54,7 +55,7 @@ exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'51
       const user=await identity(req),job=await owned(req.query.id,user),pdf=req.query.type==='pdf',file=pdf?job.pdfId:job.sheetId;
       if(!file || (!pdf && !job.rendered))fail('NOT_READY','ไฟล์ยังไม่พร้อม',409);
       const mime=pdf?'application/pdf':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',bytes=await workspace().download(file,mime);
-      res.set('Content-Type',mime);res.set('Content-Disposition',`attachment; filename="ASN.${pdf?'pdf':'xlsx'}"; filename*=UTF-8''${encodeURIComponent(job.fileName)}.${pdf?'pdf':'xlsx'}`);return res.send(bytes);
+      res.set('Content-Type',mime);res.set('Content-Disposition',disposition(job.fileName,pdf?'pdf':'xlsx'));return res.send(bytes);
     }
     if(req.method!=='POST')fail('METHOD_NOT_ALLOWED','Method not allowed',405);
     let p;
