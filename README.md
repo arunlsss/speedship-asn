@@ -42,7 +42,7 @@ After granting access or saving credentials, redeploy functions to pin the new s
 
 - Add the existing OA access token as a new version of `ASN_LINE_TOKEN` in Google Secret Manager. Set `ASN_LINE_TARGET_ID` and `ASN_LINE_ENABLED=true` in the functions environment file, then redeploy functions. Never put the token in the repository.
 - The LINE worker uses a persisted retry key, and reports `unknown` when acceptance cannot be confirmed.
-- Email uses the connected owner's Gmail API identity (`arun.l@speedshipsolution.com`). Gmail sending permission was approved and verified on 8 October 2026, and `ASN_EMAIL_ENABLED=true` is configured. Google accepted one separately approved test receipt sent only to the owner with a synthetic PDF. Inbox arrival still awaits owner confirmation.
+- Email uses the connected owner's Gmail API identity (`arun.l@speedshipsolution.com`). Gmail sending permission was approved and verified on 8 October 2026, and `ASN_EMAIL_ENABLED=true` is configured. Google accepted one separately approved test receipt sent only to the owner with a synthetic PDF. The owner confirmed receipt of the test email and its PDF attachment.
 
 ## Cutover
 
