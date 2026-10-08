@@ -11,3 +11,5 @@
 Firebase staging deployment completed successfully. Both `asnApi` and `processAsn` are deployed as Node 22 functions in Singapore. Hosting URL: https://speedship-asn-cloud.web.app
 
 Live transport checks passed: Hosting `/api/health` returns 200; unauthenticated session and download requests return 401 JSON. Only the customer API uses public Cloud Run transport; the worker remains private.
+
+A temporary verification-only Firestore record was created and immediately removed. Both create/delete events reached the private worker and returned HTTP 204. The handler deliberately skipped ASN processing for this fixture; this checks event delivery without creating documents in Drive or sending notifications.
