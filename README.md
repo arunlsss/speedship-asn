@@ -30,7 +30,7 @@ The organization restricts IAM sharing outside its domain. The API uses Google's
 
 ## Google Drive connection
 
-The current master database and archive folder IDs are in `functions/.env.speedship-asn-cloud`. The connected Drive plugin could not access the archive folder during preparation, so its drive type and live permissions are not yet verified.
+The current master database and archive folder IDs are in `functions/.env.speedship-asn-cloud`. The archive is confirmed as My Drive, owned by `arun.l@speedshipsolution.com`, from the owner's Drive view on 8 October 2026. OAuth connection and live permissions still need to be verified.
 
 **Shared drive:** grant `asn-runtime@speedship-asn-cloud.iam.gserviceaccount.com` read access to the master sheet and content creation access to the existing ASN archive. Keep `ASN_WORKSPACE_OAUTH` as `{}`. The backend refuses to use service-account file ownership in My Drive.
 
