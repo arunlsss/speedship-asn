@@ -16,11 +16,17 @@ test('attachment names strip paths and header-breaking characters',()=>{
  assert.equal(header.includes('\r'),false);assert.equal(header.includes('\n'),false);
  assert.equal(downloadFilename(header,'pdf'),'Brand_Name_bad___test 001.pdf');
 });
+test('receipt names survive missing and generic download headers',()=>{
+ for(const header of [null,'attachment; filename="ASN.pdf"'])for(const type of ['pdf','xlsx'])assert.equal(downloadFilename(header,type,'แบรนด์ไทย 2026-10-08 003'),`แบรนด์ไทย 2026-10-08 003.${type}`);
+});
 test('portal download links use the server filename instead of a hardcoded ASN name',async()=>{
  const source=readFileSync(new URL('../assets/cloud-client.js',import.meta.url),'utf8').replace(/^import .*;$/gm,''),links=[];
  const auth={authStateReady:async()=>{},currentUser:{getIdToken:async()=> 'synthetic-token'}},window={ASN_CONFIG:{firebaseConfig:{}}};let type='pdf';
  const context=vm.createContext({window,initializeApp:v=>v,getAuth:()=>auth,setPersistence:async()=>{},browserSessionPersistence:'session',downloadFilename,AbortSignal,AbortController,setTimeout:()=>1,clearTimeout:()=>{},URL:{createObjectURL:()=> 'blob:synthetic',revokeObjectURL:()=>{}},document:{createElement:()=>{const link={click:()=>links.push(link.download)};return link;}},fetch:async()=>({ok:true,headers:new Headers({'Content-Disposition':disposition('Nakama 2026-10-08 001',type)}),blob:async()=>new Blob(['synthetic'])})});
  vm.runInContext(source,context);await window.ASNCloud.ready;
  await window.ASNCloud.download('id','pdf');type='xlsx';await window.ASNCloud.download('id','xlsx');
- assert.deepEqual(links,['Nakama 2026-10-08 001.pdf','Nakama 2026-10-08 001.xlsx']);
+ context.fetch=async()=>({ok:true,headers:new Headers(),blob:async()=>new Blob(['synthetic'])});
+ await window.ASNCloud.download('id','pdf','Nakama 2026-10-08 001');
+ await window.ASNCloud.download('id','xlsx','Nakama 2026-10-08 001');
+ assert.deepEqual(links,['Nakama 2026-10-08 001.pdf','Nakama 2026-10-08 001.xlsx','Nakama 2026-10-08 001.pdf','Nakama 2026-10-08 001.xlsx']);
 });

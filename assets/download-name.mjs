@@ -1,4 +1,6 @@
-export function downloadFilename(header,type) {
+export function downloadFilename(header,type,receiptName) {
+  const stem=String(receiptName || '').replace(/[\x00-\x1f\x7f/\\:*?"<>|]/g,'_').trim().replace(/[. ]+$/g,'');
+  if(stem)return `${stem}.${type==='pdf'?'pdf':'xlsx'}`;
   let name;
   const unicode=/filename\*=UTF-8''([^;]+)/i.exec(header || '');
   if(unicode){try{name=decodeURIComponent(unicode[1].trim());}catch(_){}}

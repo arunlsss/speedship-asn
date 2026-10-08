@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13"></script>
 <script src="./config.js"></script>
-<script src="./assets/cloud-client.js?v=20261008-2" defer></script>
+<script src="./assets/cloud-client.js?v=20261008-3" defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1200,7 +1200,7 @@ function renderReceipts(rows) {
       button.onclick=async()=>{button.disabled=true;try{const res=await cloudPost({action:'retryASN',id:row.id});if(!res.success)throw Error(res.message);await refreshReceipts();}catch(err){document.getElementById('receiptNotice').textContent=err.message;}finally{button.disabled=false;}};actions.appendChild(button);
     }
     [['pdf','ดาวน์โหลด PDF',row.hasPdf],['xlsx','ดาวน์โหลด Excel',row.hasSheets]].forEach(([type,label,available])=>{
-      if(!available)return;const button=document.createElement('button');button.className='btn btn-outline btn-sm';button.textContent=label;button.onclick=()=>window.ASNCloud.download(row.id,type).catch(err=>document.getElementById('receiptNotice').textContent=err.message);actions.appendChild(button);
+      if(!available)return;const button=document.createElement('button');button.className='btn btn-outline btn-sm';button.textContent=label;button.onclick=()=>window.ASNCloud.download(row.id,type,row.fileName).catch(err=>document.getElementById('receiptNotice').textContent=err.message);actions.appendChild(button);
     });
     card.appendChild(actions);container.appendChild(card);
   });

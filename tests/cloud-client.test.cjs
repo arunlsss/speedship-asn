@@ -79,3 +79,10 @@ test('management retries a lost response with the same review ID and unchanged d
 test('customer receipt history displays review results and reasons safely',()=>{
   const h=harness(html,{ready:Promise.resolve({currentUser:null})});vm.runInContext(inline,h.context);h.context.renderReceipts([{id:'d'.repeat(64),fileName:'ASN',direction:'Inbound',status:'saved',stage:'complete',reviewStatus:'rejected',reviewReason:'<img src=x> Missing lot',lineStatus:'sent'}]);assert.match(h.document.getElementById('receiptList').textContent,/ปฏิเสธ/);assert.match(h.document.getElementById('receiptList').textContent,/Missing lot/);assert.equal(h.document.getElementById('receiptList').querySelectorAll('img').length,0);
 });
+test('customer history passes the visible ASN filename to both download actions',async()=>{
+ const calls=[],cloud={ready:Promise.resolve({currentUser:null}),download:async(...args)=>calls.push(args)};
+ const h=harness(html,cloud);vm.runInContext(inline,h.context);
+ h.context.renderReceipts([{id:'e'.repeat(64),fileName:'Nakama 2026-10-08 004',direction:'Inbound',status:'saved',stage:'complete',hasPdf:true,hasSheets:true,lineStatus:'sent'}]);
+ for(const button of h.document.getElementById('receiptList').querySelectorAll('button'))if(['ดาวน์โหลด PDF','ดาวน์โหลด Excel'].includes(button.textContent))await button.onclick();
+ assert.deepEqual(calls,[['e'.repeat(64),'pdf','Nakama 2026-10-08 004'],['e'.repeat(64),'xlsx','Nakama 2026-10-08 004']]);
+});

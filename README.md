@@ -56,4 +56,4 @@ The live portal is https://asn.speedshipsolution.com and management is https://a
 
 Historical Apps Script archives remain in Drive. The dashboard currently lists submissions created by this new Firebase backend; it does not claim to include historical archives.
 
-Portal PDF/Excel downloads and new PDF email attachments use the existing receipt name (brand, Bangkok date and sequence), for example `Nakama 2026-10-08 001.pdf`. UTF-8 filenames support Thai brands; browser blob downloads honor the API filename. Stored Drive files and older sent emails retain their existing names.
+Portal PDF/Excel downloads and new PDF email attachments use the existing receipt name (brand, Bangkok date and sequence), for example `Nakama 2026-10-08 001.pdf`. UTF-8 filenames support Thai brands; browser blob downloads receive the displayed receipt name directly and use API headers as a fallback. Stored Drive files and older sent emails retain their existing names.
