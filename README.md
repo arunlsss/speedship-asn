@@ -10,7 +10,7 @@ Project: `speedship-asn-cloud`, region: `asia-southeast1`.
 - Retries reuse the original receipt, Sheet and PDF. Spreadsheet content is written with RAW values to prevent formulas executing from user text. The master database is never written to or exported.
 - `/management` requires Google sign-in and a verified email in `ASN_ADMIN_EMAILS`. It shows submission progress, file downloads and email/LINE delivery state separately. Default admin: `arun.l@speedshipsolution.com`.
 - All Firestore browser reads and writes are denied. The API enforces live customer/brand grants and receipt ownership for every status request and download.
-- Email and LINE are disabled until their live connection is configured. An unconfirmed notification cannot undo saved files. Ambiguous email delivery is never automatically resent.
+- Receipt email is enabled after the owner approved Gmail sending permission. LINE remains disabled until its live connection is configured. An unconfirmed notification cannot undo saved files. Ambiguous email delivery is never automatically resent.
 
 ## Build and test
 
@@ -42,7 +42,7 @@ After granting access or saving credentials, redeploy functions to pin the new s
 
 - Add the existing OA access token as a new version of `ASN_LINE_TOKEN` in Google Secret Manager. Set `ASN_LINE_TARGET_ID` and `ASN_LINE_ENABLED=true` in the functions environment file, then redeploy functions. Never put the token in the repository.
 - The LINE worker uses a persisted retry key, and reports `unknown` when acceptance cannot be confirmed.
-- Email uses the connected owner's Gmail API identity. Set `ASN_EMAIL_ENABLED=true` only after Gmail send permission and the intended sender account are confirmed.
+- Email uses the connected owner's Gmail API identity (`arun.l@speedshipsolution.com`). Gmail sending permission was approved and verified on 8 October 2026, and `ASN_EMAIL_ENABLED=true` is configured. Actual delivery awaits an authorized controlled receipt; validation has not sent a test email.
 
 ## Cutover
 
