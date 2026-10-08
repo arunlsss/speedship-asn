@@ -17,7 +17,7 @@ const lineToken=defineSecret('ASN_LINE_TOKEN');
 const databaseId=defineString('ASN_DATABASE_ID',{default:'1Kgy8JoioazRK3jlWBqhu5XH0F-MhAmmtIq2O6Z4zZpM'});
 const archiveFolderId=defineString('ASN_ARCHIVE_FOLDER_ID',{default:'1MjEjuz758C27CzLQeZwxCUTbDbTpanzB'});
 const adminEmails=defineString('ASN_ADMIN_EMAILS',{default:'arun.l@speedshipsolution.com'});
-const lineTarget=defineString('ASN_LINE_TARGET_ID',{default:''});
+const lineTarget=defineSecret('ASN_LINE_TARGET_ID');
 const emailEnabled=defineString('ASN_EMAIL_ENABLED',{default:'false'});
 const lineEnabled=defineString('ASN_LINE_ENABLED',{default:'false'});
 const runtimeServiceAccount=defineString('ASN_SERVICE_ACCOUNT',{default:'asn-runtime@speedship-asn-cloud.iam.gserviceaccount.com'});
@@ -99,7 +99,7 @@ exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'51
     fail('VALIDATION','Unknown action');
   } catch(err){failure(res,err);}
 });
-exports.processAsn=onDocumentWritten({document:'submissions/{id}',region,timeoutSeconds:540,memory:'1GiB',maxInstances:1,concurrency:1,retry:true,serviceAccount:runtimeServiceAccount,secrets:[workspaceOAuth,lineToken]},async event=>{
+exports.processAsn=onDocumentWritten({document:'submissions/{id}',region,timeoutSeconds:540,memory:'1GiB',maxInstances:1,concurrency:1,retry:true,serviceAccount:runtimeServiceAccount,secrets:[workspaceOAuth,lineToken,lineTarget]},async event=>{
   const after=event.data?.after;if(!after?.exists || after.data().status!=='queued')return;
   await processSubmission(event.params.id,after.data().generation,{store,workspace:workspace(),line:createLine(lineToken.value(),lineTarget.value()),emailEnabled:emailEnabled.value()==='true',lineEnabled:lineEnabled.value()==='true'});
 });
