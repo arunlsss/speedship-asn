@@ -83,6 +83,13 @@ function createWorkspace(config, credentialJson) {
       if(copiedCols>12)requests.push({deleteDimension:{range:{sheetId,dimension:'COLUMNS',startIndex:12,endIndex:copiedCols}}});
       requests.push({updateDimensionProperties:{range:{sheetId,dimension:'ROWS',startIndex:0,endIndex:4},properties:{hiddenByUser:true},fields:'hiddenByUser'}},{updateDimensionProperties:{range:{sheetId,dimension:'COLUMNS',startIndex:0,endIndex:1},properties:{hiddenByUser:true},fields:'hiddenByUser'}});
       const noteRange={sheetId,startRowIndex:lastRow-1,endRowIndex:lastRow,startColumnIndex:1,endColumnIndex:12};
+      // Leave enough room for barcode-length SKUs in the exported document.
+      requests.push({updateDimensionProperties:{range:{sheetId,dimension:'COLUMNS',startIndex:2,endIndex:3},properties:{pixelSize:160},fields:'pixelSize'}});
+      for(const [startColumnIndex,endColumnIndex] of [[1,6],[6,12]]) {
+        const addressRange={sheetId,startRowIndex:20,endRowIndex:21,startColumnIndex,endColumnIndex};
+        requests.push({unmergeCells:{range:addressRange}},{mergeCells:{range:addressRange,mergeType:'MERGE_ALL'}});
+      }
+      requests.push({repeatCell:{range:{sheetId,startRowIndex:20,endRowIndex:21,startColumnIndex:1,endColumnIndex:12},cell:{userEnteredFormat:{wrapStrategy:'WRAP'}},fields:'userEnteredFormat.wrapStrategy'}},{updateDimensionProperties:{range:{sheetId,dimension:'ROWS',startIndex:20,endIndex:21},properties:{pixelSize:52},fields:'pixelSize'}});
       requests.push({unmergeCells:{range:noteRange}},{mergeCells:{range:noteRange,mergeType:'MERGE_ALL'}},{repeatCell:{range:noteRange,cell:{userEnteredFormat:{wrapStrategy:'WRAP'}},fields:'userEnteredFormat.wrapStrategy'}});
       for(const column of [2,6,7])requests.push({repeatCell:{range:{sheetId,startRowIndex:25,endRowIndex:25+lines.length,startColumnIndex:column,endColumnIndex:column+1},cell:{userEnteredFormat:{numberFormat:{type:'TEXT'}}},fields:'userEnteredFormat.numberFormat'}});
       await sheets.spreadsheets.batchUpdate({spreadsheetId:id,requestBody:{requests}},options);
