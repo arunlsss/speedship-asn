@@ -8,7 +8,7 @@ Project: `speedship-asn-cloud`, region: `asia-southeast1`.
 - Existing Customer usernames and passwords are validated server-side against the read-only master sheet. Firebase custom authentication then manages the customer session. No passwords are stored in Firestore or sent back to the browser.
 - Submissions are accepted into Firestore with a unique, stable request ID. A background worker creates native Google Sheets and PDFs under `ASN/<Brand>/<Inbound|Outbound>`. Numbering reserves existing archive numbers and uses Bangkok dates.
 - Retries reuse the original receipt, Sheet and PDF. Spreadsheet content is written with RAW values to prevent formulas executing from user text. The master database is never written to or exported.
-- `/management` requires Google sign-in and a verified email in `ASN_ADMIN_EMAILS`. It shows submission progress, file downloads and email/LINE delivery state separately. Default admin: `arun.l@speedshipsolution.com`.
+- `/management` requires Google sign-in and a verified email in the `ASN_ADMIN_EMAILS` Secret Manager list. It shows submission progress, file downloads and email/LINE delivery state separately. The owner's email remains authorized. Keep the real manager list out of source and frontend files; redeploy the API after changing its secret version.
 - All Firestore browser reads and writes are denied. The API enforces live customer/brand grants and receipt ownership for every status request and download.
 - Receipt email is enabled after the owner approved Gmail sending permission. LINE remains disabled until its live connection is configured. An unconfirmed notification cannot undo saved files. Ambiguous email delivery is never automatically resent.
 

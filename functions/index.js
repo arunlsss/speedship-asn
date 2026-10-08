@@ -16,7 +16,7 @@ const workspaceOAuth=defineSecret('ASN_WORKSPACE_OAUTH');
 const lineToken=defineSecret('ASN_LINE_TOKEN');
 const databaseId=defineString('ASN_DATABASE_ID',{default:'1Kgy8JoioazRK3jlWBqhu5XH0F-MhAmmtIq2O6Z4zZpM'});
 const archiveFolderId=defineString('ASN_ARCHIVE_FOLDER_ID',{default:'1MjEjuz758C27CzLQeZwxCUTbDbTpanzB'});
-const adminEmails=defineString('ASN_ADMIN_EMAILS',{default:'arun.l@speedshipsolution.com'});
+const adminEmails=defineSecret('ASN_ADMIN_EMAILS');
 const lineTarget=defineSecret('ASN_LINE_TARGET_ID');
 const emailEnabled=defineString('ASN_EMAIL_ENABLED',{default:'false'});
 const lineEnabled=defineString('ASN_LINE_ENABLED',{default:'false'});
@@ -40,7 +40,7 @@ function failure(res,err) {
 // Domain-restricted sharing disallows allUsers IAM bindings. The deployment
 // configures public transport with Cloud Run's invoker IAM check setting;
 // every protected action below still requires a verified Firebase identity.
-exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'512MiB',maxInstances:5,serviceAccount:runtimeServiceAccount,secrets:[workspaceOAuth],cors:false},async(req,res)=>{
+exports.asnApi=onRequest({region,invoker:'private',timeoutSeconds:120,memory:'512MiB',maxInstances:5,serviceAccount:runtimeServiceAccount,secrets:[workspaceOAuth,adminEmails],cors:false},async(req,res)=>{
   res.set('Cache-Control','no-store');res.set('X-Content-Type-Options','nosniff');
   try {
     const path=req.path.replace(/^\/api/,'');
