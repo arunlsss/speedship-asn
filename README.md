@@ -34,7 +34,7 @@ The current master database and archive folder IDs are in `functions/.env.speeds
 
 **Shared drive:** grant `asn-runtime@speedship-asn-cloud.iam.gserviceaccount.com` read access to the master sheet and content creation access to the existing ASN archive. Keep `ASN_WORKSPACE_OAUTH` as `{}`. The backend refuses to use service-account file ownership in My Drive.
 
-**My Drive:** create an internal Google OAuth desktop client in this project and connect the existing archive owner with `scripts/connect-workspace.mjs`. The script obtains consent on the user's computer, validates the master/template and archive access, and puts the refresh credentials directly in Secret Manager. Do not paste credentials into chat, commit them, or put them in frontend config. The runtime reads only its own secret. Google Workspace may require administrator approval for Drive/Gmail scopes.
+**My Drive:** create an internal Google OAuth desktop client in this project and connect the existing archive owner with `scripts/connect-workspace.mjs`. The script first checks Cloud sign-in, then waits up to 15 minutes for the owner's Google approval. It verifies the approved account, puts refresh credentials directly in Secret Manager, and checks the master/template and archive access. A failed archive check does not discard an already saved owner connection. Do not paste credentials into chat, commit them, or put them in frontend config. The runtime reads only its own secret. Google Workspace may require administrator approval for Drive/Gmail scopes.
 
 After granting access or saving credentials, redeploy functions to pin the new secret version. In the management dashboard, run “ตรวจสอบการเชื่อมต่อ” before any real customer submission.
 
