@@ -4,6 +4,7 @@ await mkdir('public/assets',{recursive:true});
 await copyFile('index.html','public/index.html');
 await copyFile('config.js','public/config.js');
 await cp('assets/fonts','public/assets/fonts',{recursive:true});
+await copyFile('assets/brand-fonts.css','public/assets/brand-fonts.css');
 await copyFile('assets/speedship-logo.png','public/assets/speedship-logo.png');
 await build({entryPoints:['assets/cloud-client.js'],outfile:'public/assets/cloud-client.js',bundle:true,format:'iife',target:['es2020'],minify:true,sourcemap:false});
 console.log('ASN customer portal and cloud login bundle built.');

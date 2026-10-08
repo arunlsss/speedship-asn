@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Speedship Solution ASN Submission System</title>
+<link rel="preload" href="/assets/fonts/euclid-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/db-ozone-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/brand-fonts.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13"></script>
 <script src="./config.js"></script>
 <script src="./assets/cloud-client.js" defer></script>
 <style>
-  @font-face { font-family:Sarabun; src:url("./assets/fonts/Sarabun-Regular.ttf") format("truetype"); font-weight:400; font-style:normal; font-display:swap; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -33,7 +35,7 @@
     --bg:          #f4f7f3;
   }
 
-  body { font-family: 'Sarabun', sans-serif; background: var(--bg); min-height: 100vh; color: #1a202c; font-size: 15px; }
+  body { font-family: var(--font-brand); background: var(--bg); min-height: 100vh; color: #1a202c; font-size: 15px; }
 
   /* ---- LAYOUT ---- */
   .page { display: none; }
@@ -92,6 +94,8 @@
   .btn-ghost   { background: rgba(40,100,30,.08); color: var(--green); border: none; }
   .btn-sm      { padding: 5px 11px; font-size: 12px; }
   .btn-full    { width: 100%; justify-content: center; }
+  .management-login { margin-top: 10px; text-decoration: none; }
+  .btn:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
 
   /* ---- TOP BAR ---- */
   .topbar {
@@ -243,6 +247,7 @@
         <input type="password" id="inputPassword" placeholder="กรอก Password">
       </div>
       <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+      <a class="btn btn-outline btn-full management-login" id="managementBtn" href="/management">Management</a>
 
       <p class="login-note">หากพบปัญหาในการใช้งาน<br>โปรดติดต่อฝ่ายบริการลูกค้า</p>
     </div>
