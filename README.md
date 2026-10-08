@@ -21,11 +21,12 @@ npm test
 npm run build
 firebase deploy --only functions,firestore,hosting --project speedship-asn-cloud --force
 gcloud run services update asnapi --region=asia-southeast1 --project=speedship-asn-cloud --no-invoker-iam-check
+gcloud run services add-iam-policy-binding processasn --region=asia-southeast1 --project=speedship-asn-cloud --member=serviceAccount:asn-runtime@speedship-asn-cloud.iam.gserviceaccount.com --role=roles/run.invoker
 ```
 
 `--force` accepts the explicitly configured worker retry policy. Never change the project to Attendance or Nakama. Dependencies are pinned in lockfiles; functions run on Node 22.
 
-The organization restricts IAM sharing outside its domain. The API uses Google's supported Cloud Run public transport setting instead of an `allUsers` IAM binding; protected actions require Firebase authentication. Apply the second command after deployment and verify `/api/health` returns 200 and unauthenticated session/download requests return 401. Do not apply it to `processAsn`, which stays private. See [Google's public Cloud Run access documentation](https://docs.cloud.google.com/run/docs/authenticating/public).
+The organization restricts IAM sharing outside its domain. The API uses Google's supported Cloud Run public transport setting instead of an `allUsers` IAM binding; protected actions require Firebase authentication. Run both gcloud commands after deployment and verify `/api/health` returns 200 and unauthenticated session/download requests return 401. Do not disable the check on `processAsn`, which stays private. Its trigger service account alone receives the service-level invoker grant in the final command. See [Google's public Cloud Run access documentation](https://docs.cloud.google.com/run/docs/authenticating/public).
 
 ## Google Drive connection
 
