@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "npm --prefix functions test && node --test tests/cloud-client.test.cjs",
+    "test": "npm --prefix functions test && node --test tests/cloud-client.test.cjs tests/hidden-input.test.mjs",
     "check": "npm --prefix functions run check"
   },
   "dependencies": {
