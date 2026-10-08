@@ -1,13 +1,13 @@
-# Validation: 7 October 2026
+# Firebase migration validation — 8 October 2026
 
-- 9/9 offline backend tests passed using Node and mocked Apps Script/Drive/Sheets services.
-- Frontend and Apps Script source passed JavaScript syntax checks.
-- Chromium checks passed at desktop (1365 × 900) and mobile (390 × 844) sizes with no page JavaScript errors or mobile document overflow.
-- Browser checks covered login/session handling, password clearing, outbound labels, SKU autofill, email input identifiers, interrupted response retry with the same request ID, headerless CSV imports, Excel imports using the site's actual SheetJS 0.18.5 dependency, leading-zero SKU/lot values, no-expiry handling, expiry-date import, quantity validation, form clearing across brands and logout.
-- The original embedded logo is byte-for-byte unchanged. The original backend URL is removed; the frontend uses config.js.
-- Preview screenshots use synthetic Example Brand data.
+- 12 backend checks passed: brand requirements, input/date validation, preserved leading zeros, Firebase identity, receipt/download ownership, Bangkok date boundaries, concurrent duplicate submissions, existing archive sequence reservations, worker leases, Sheets/PDF recovery, notification ambiguity, secret-free receipt responses and login throttling.
+- 5 portal/dashboard DOM checks passed: script syntax, queued-to-saved state, recovery after lost responses, stable retry IDs, preparation-error cleanup, management filters/counts and safe rendering of untrusted text.
+- Production frontend bundle builds successfully; cloud function exports load successfully.
+- Firebase security rules compile and deny all direct browser database access.
+- Visual browser inspection is unverified: the computer-use browser could not verify its enforced access policy for either the live site or localhost preview. No alternate browser was used to bypass that restriction.
+- Live Google Drive access, native file/PDF rendering, customer login, Google management login, notification delivery and custom-domain cutover are pending required connection checks. Unit/DOM tests are not a substitute for these live checks.
+- Test fixtures are synthetic. No real customer submission, email or LINE message was sent by validation.
 
-- The deployment owner's `checkConfiguration` output reported database `01 ASN Main database`, archive folder `ASN` and time zone `Asia/Bangkok`.
-- The new public `/exec` endpoint returned `{"success":true,"service":"Speedship ASN","version":2}` on 7 October 2026. `config.js` is configured with that deployment URL.
+Firebase staging deployment completed successfully. Both `asnApi` and `processAsn` are deployed as Node 22 functions in Singapore. Hosting URL: https://speedship-asn-cloud.web.app
 
-Not verified live: authenticated customer flows, Google-native template copies and actual PDF rendering, destination-folder write access, notification delivery, GitHub Pages publishing, DNS/HTTPS, and the existing LINE integration. No live submissions, database writes, emails or LINE messages were made. Follow the controlled live checks in README.md before cutover.
+Live transport checks passed: Hosting `/api/health` returns 200; unauthenticated session and download requests return 401 JSON. Only the customer API uses public Cloud Run transport; the worker remains private.

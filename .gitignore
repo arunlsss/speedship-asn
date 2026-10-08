@@ -1,0 +1,13 @@
+node_modules/
+functions/node_modules/
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+functions/.secret.local
+functions/.env.local
+*.credentials.json
+oauth-client.json
+client_secret*.json
+credentials*.json
+service-account*.json
+test-results/

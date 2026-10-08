@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASN Management · Speedship Solution</title>
+<script src="/config.js"></script><script src="/assets/cloud-client.js" defer></script>
+<link rel="stylesheet" href="/assets/management.css"><script src="/assets/management.js" defer></script>
+</head>
+<body>
+<header><a href="/" class="wordmark"><img src="/assets/speedship-logo.png" alt="Speedship Solution" width="160" height="48"></a><nav><a href="/">Customer portal</a><button id="signOut" class="text-button" hidden>ออกจากระบบ</button></nav></header>
+<main>
+<section id="login" class="login"><span class="eyebrow">OPERATIONS WORKSPACE</span><h1>ASN Management</h1><p>ติดตาม Inbound และ Outbound ตรวจสอบไฟล์ และสถานะการแจ้งเตือน</p><button id="signIn" class="primary">เข้าสู่ระบบด้วย Google</button><p class="muted">สำหรับผู้ดูแล Speedship ที่ได้รับสิทธิ์</p><div id="loginError" role="alert"></div></section>
+<section id="dashboard" hidden>
+<div class="heading"><div><span class="eyebrow">OPERATIONS / ASN</span><h1>ภาพรวมรายการ ASN</h1><p id="scope">100 รายการล่าสุดในระบบใหม่</p></div><div class="heading-actions"><span id="updated">ยังไม่ได้อัปเดต</span><button id="refresh" class="secondary">อัปเดต</button></div></div>
+<div class="metrics"><article><span>รายการที่โหลด</span><strong id="total">0</strong><small>ล่าสุดในระบบใหม่</small></article><article><span>รอดำเนินการ / กำลังจัดทำ</span><strong id="pending">0</strong><small>รับรายการแล้ว</small></article><article><span>บันทึกเรียบร้อย</span><strong id="saved">0</strong><small>Sheets และ PDF พร้อมแล้ว</small></article><article><span>ต้องตรวจสอบ</span><strong id="attention">0</strong><small>ไฟล์หรือการแจ้งเตือน</small></article></div>
+<section class="panel"><div class="panel-heading"><div><h2>รายการล่าสุด</h2><p>ตรวจสอบความคืบหน้าและดาวน์โหลดเอกสาร</p></div><button id="checkConfig" class="text-button">ตรวจสอบการเชื่อมต่อ</button></div>
+<div class="filters"><label class="search">ค้นหารายการ<input id="search" type="search" placeholder="ค้นหา Brand, PO, ลูกค้า หรือชื่อไฟล์"></label><label>ประเภท<select id="direction"><option value="">ทั้งหมด</option><option>Inbound</option><option>Outbound</option></select></label><label>สถานะ<select id="status"><option value="">ทั้งหมด</option><option value="queued">รับรายการแล้ว</option><option value="processing">กำลังจัดทำไฟล์</option><option value="saved">บันทึกเรียบร้อย</option><option value="failed">ต้องดำเนินการต่อ</option></select></label></div>
+<div id="notice" role="status" aria-live="polite"></div><div class="table-wrap"><table><thead><tr><th>รายการ / ลูกค้า</th><th>Brand / PO</th><th>ประเภท</th><th>สถานะ</th><th>แจ้งเตือน</th><th>เอกสาร</th></tr></thead><tbody id="rows"></tbody></table></div><div id="empty" class="empty" hidden><span class="empty-icon">↗</span><h3>ยังไม่มีรายการที่ตรงกับตัวกรอง</h3><p>รายการ ASN ที่ส่งผ่านระบบใหม่จะแสดงที่นี่</p></div><footer class="panel-footer"><span id="count"></span><button id="more" class="secondary" hidden>โหลดรายการก่อนหน้า</button></footer>
+</section>
+<p class="footnote">อัปเดตอัตโนมัติทุก 15 วินาที · ไฟล์ ASN ยังคงจัดเก็บใน Google Drive · การส่ง LINE แสดงสถานะแยกจากการบันทึกไฟล์</p>
+</section>
+</main>
+</body></html>

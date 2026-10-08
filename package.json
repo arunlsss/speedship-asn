@@ -1,0 +1,16 @@
+{
+  "name": "speedship-asn-cloud",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "npm --prefix functions test && node --test tests/cloud-client.test.cjs",
+    "check": "npm --prefix functions run check"
+  },
+  "dependencies": {
+    "firebase": "^12.19.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "linkedom": "^0.18.13"
+  }
+}
