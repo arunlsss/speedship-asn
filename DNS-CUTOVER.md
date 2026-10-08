@@ -29,3 +29,5 @@ These exact requirements come from Firebase Hosting's custom-domain resource. Co
 Restore the `asn` CNAME to `arunlsss.github.io`. Keep the old GitHub Pages/Apps Script deployment available until cutover has passed. DNS caches can retain the previous value until its TTL expires.
 
 Sources: [Firebase custom-domain setup](https://firebase.google.com/docs/hosting/custom-domain), [Firebase custom-domain API](https://firebase.google.com/docs/reference/hosting/rest/v1beta1/projects.sites.customDomains).
+
+Verification update: the owner added the certificate TXT record, and authoritative/public/Google DNS all return the exact expected value. Firebase's certificate DNS check has also detected it. Receipt email delivery with PDF is owner-confirmed. The current CNAME still points to GitHub Pages. Wait for Firebase certificate readiness before traffic cutover.
