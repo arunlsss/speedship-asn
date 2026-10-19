@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Speedship Solution ASN Submission System</title>
-<link rel="preload" href="/assets/fonts/euclid-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/db-ozone-regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/brand-fonts.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="/assets/brand-fonts.css?v=20261008-5">
+<script src="/assets/vendor/xlsx-0.20.3.full.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13"></script>
 <script src="./config.js"></script>
@@ -35,7 +34,7 @@
     --bg:          #f4f7f3;
   }
 
-  body { font-family: var(--font-brand); background: var(--bg); min-height: 100vh; color: #1a202c; font-size: 15px; }
+  body { font-family: var(--font-brand); background: var(--bg); min-height: 100vh; color: #1a202c; font-size: 18px; line-height: 1.6; }
 
   /* ---- LAYOUT ---- */
   .page { display: none; }
@@ -51,27 +50,28 @@
     display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
   }
   .login-logo-bar img { width: 64px; height: 64px; object-fit: contain; border-radius: 10px; }
-  .login-logo-bar .brand-name { font-size: 15px; font-weight: 700; color: var(--green); line-height: 1.3; }
-  .login-logo-bar .brand-sub  { font-size: 12px; color: var(--gray-hint); }
+  .login-logo-bar .brand-name { font-size: 18px; font-weight: 700; color: var(--green); line-height: 1.3; }
+  .login-logo-bar .brand-sub  { font-size: 15px; color: var(--gray-hint); }
 
   .login-card {
     background: #fff;
     border-radius: 14px;
     padding: 36px 36px 28px;
-    width: 360px;
+    width: min(400px,calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
     box-shadow: 0 4px 32px rgba(40,100,30,0.10);
     border-top: 4px solid var(--green);
   }
-  .login-card h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; color: var(--green); }
-  .login-card .subtitle { font-size: 13px; color: var(--gray-hint); margin-bottom: 24px; }
-  .login-note { margin-top: 18px; font-size: 12px; color: var(--gray-hint); text-align: center; line-height: 1.6; }
+  .login-card h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; color: var(--green); }
+  .login-card .subtitle { font-size: 16px; color: var(--gray-hint); margin-bottom: 24px; }
+  .login-note { margin-top: 18px; font-size: 15px; color: var(--gray-hint); text-align: center; line-height: 1.6; }
 
   /* ---- FORM ELEMENTS ---- */
-  label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-text); margin-bottom: 5px; }
+  label { display: block; font-size: 16px; font-weight: 600; color: var(--gray-text); margin-bottom: 5px; }
   input, select, textarea {
     width: 100%; padding: 9px 12px;
     border: 1.5px solid var(--border); border-radius: 7px;
-    font-size: 14px; font-family: inherit; color: #1a202c;
+    font-size: 18px; line-height: 1.5; font-family: inherit; color: #1a202c;
     background: #fff; transition: border-color .15s; outline: none;
   }
   input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(40,100,30,.08); }
@@ -82,7 +82,7 @@
   .btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 9px 18px; border: none; border-radius: 7px;
-    font-size: 14px; font-weight: 600; font-family: inherit;
+    font-size: 18px; line-height: 1.5; font-weight: 600; font-family: inherit;
     cursor: pointer; transition: opacity .15s;
   }
   .btn:hover { opacity: .88; }
@@ -92,7 +92,7 @@
   .btn-danger  { background: var(--danger); color: #fff; }
   .btn-outline { background: #fff; color: var(--green); border: 1.5px solid var(--green); }
   .btn-ghost   { background: rgba(40,100,30,.08); color: var(--green); border: none; }
-  .btn-sm      { padding: 5px 11px; font-size: 12px; }
+  .btn-sm      { padding: 5px 11px; font-size: 15px; }
   .btn-full    { width: 100%; justify-content: center; }
   .management-login { margin-top: 10px; text-decoration: none; }
   .btn:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
@@ -100,25 +100,25 @@
   /* ---- TOP BAR ---- */
   .topbar {
     background: var(--green);
-    color: #fff; padding: 0 20px; height: 56px;
+    color: #fff; padding: 12px 20px; min-height: 64px; gap: 12px; flex-wrap: wrap;
     display: flex; align-items: center; justify-content: space-between;
     box-shadow: 0 2px 8px rgba(0,0,0,.15);
   }
   .topbar-left { display: flex; align-items: center; gap: 12px; }
   .topbar-logo { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; display: none; filter: brightness(0) invert(1); }
   .topbar-logo.show { display: block; }
-  .topbar-title { font-size: 15px; font-weight: 700; letter-spacing: .01em; }
+  .topbar-title { font-size: 18px; font-weight: 700; letter-spacing: .01em; }
   .topbar-brand {
-    font-size: 13px; background: rgba(255,255,255,.15);
+    font-size: 16px; background: rgba(255,255,255,.15);
     padding: 5px 13px; border-radius: 20px;
     display: flex; align-items: center; gap: 6px;
   }
-  .topbar-logout { cursor: pointer; opacity: .8; font-size: 12px; transition: opacity .15s; }
+  .topbar-logout { cursor: pointer; opacity: .8; font-size: 15px; transition: opacity .15s; }
   .topbar-logout:hover { opacity: 1; }
 
   /* ---- FORM CONTAINER ---- */
   #asnPage.active { display: block; }
-  .form-container { max-width: 920px; margin: 24px auto; padding: 0 20px 60px; }
+  .form-container { max-width: 1640px; margin: 24px auto; padding: 0 20px 60px; }
 
   .section-card {
     background: #fff; border-radius: 10px; padding: 22px 26px;
@@ -130,19 +130,20 @@
     margin-bottom: 16px; padding-bottom: 10px;
     border-bottom: 1.5px solid var(--green-light);
   }
-  .section-title { font-size: 15px; font-weight: 700; color: var(--green); }
+  .section-title { font-size: 18px; font-weight: 700; color: var(--green); }
 
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
   .col-span-2 { grid-column: span 2; }
 
   /* ---- LINES TABLE ---- */
-  .lines-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 820px; }
-  th { background: var(--green); color: #fff; padding: 9px 8px; text-align: left; font-weight: 600; white-space: nowrap; }
+  .lines-wrap { width: 100%; }
+  #linesTable { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 16px; }
+  th { background: var(--green); color: #fff; padding: 9px 8px; text-align: left; font-weight: 600; }
   td { padding: 5px 5px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
   tr:hover td { background: var(--green-pale); }
-  .line-no { color: var(--gray-hint); font-size: 12px; text-align: center; width: 32px; }
-  td input, td select { padding: 6px 7px; font-size: 13px; }
+  .line-no { color: var(--gray-hint); font-size: 15px; text-align: center; width: 32px; }
+  td input, td select { min-width: 0; padding: 6px 7px; font-size: 16px; }
+  .line-field-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   td input.invalid { border-color: var(--danger); background: #fff8f8; }
   input.field-error, select.field-error { border-color: var(--danger) !important; background: #fff8f8 !important; box-shadow: 0 0 0 3px rgba(192,57,43,.1) !important; }
 
@@ -163,11 +164,11 @@
     width: 100%; height: 100%; border: none; padding: 0;
   }
   .drop-icon { font-size: 28px; margin-bottom: 6px; }
-  .drop-text { font-size: 13px; color: var(--green); font-weight: 600; }
-  .drop-sub  { font-size: 12px; color: var(--gray-hint); margin-top: 3px; }
+  .drop-text { font-size: 16px; color: var(--green); font-weight: 600; }
+  .drop-sub  { font-size: 15px; color: var(--gray-hint); margin-top: 3px; }
 
   .upload-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
-  .upload-result { font-size: 12px; padding: 5px 10px; border-radius: 6px; display: none; }
+  .upload-result { font-size: 15px; padding: 5px 10px; border-radius: 6px; display: none; }
   .upload-result.ok  { background: var(--success-bg); color: var(--success-txt); border: 1px solid var(--success-bdr); display: inline-block; }
   .upload-result.err { background: var(--danger-bg); color: #922b21; border: 1px solid var(--danger-bdr); display: inline-block; }
 
@@ -177,7 +178,7 @@
   .submit-row .field { margin-bottom: 0; flex: 1; min-width: 220px; }
 
   /* ---- ALERTS ---- */
-  .alert { padding: 10px 14px; border-radius: 7px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .alert { padding: 10px 14px; border-radius: 7px; font-size: 16px; margin-bottom: 14px; display: none; }
   .alert.show { display: block; }
   .alert-error   { background: var(--danger-bg); color: #922b21; border: 1px solid var(--danger-bdr); }
   .alert-success { background: var(--success-bg); color: var(--success-txt); border: 1px solid var(--success-bdr); }
@@ -187,25 +188,41 @@
   .modal-overlay.show { display: flex; }
   .modal { background: #fff; border-radius: 14px; padding: 32px 34px; max-width: 420px; width: 90%; text-align: center; border-top: 4px solid var(--green); }
   .modal-icon { font-size: 44px; margin-bottom: 10px; }
-  .modal h2 { font-size: 20px; color: var(--green); margin-bottom: 8px; }
-  .modal p  { font-size: 14px; color: var(--gray-text); margin-bottom: 20px; line-height: 1.7; }
-  .modal .asn-id-badge { display: inline-block; background: var(--green-light); color: var(--green-dark); font-weight: 700; font-size: 16px; padding: 8px 20px; border-radius: 8px; margin-bottom: 20px; }
+  .modal h2 { font-size: 26px; color: var(--green); margin-bottom: 8px; }
+  .modal p  { font-size: 18px; color: var(--gray-text); margin-bottom: 20px; line-height: 1.7; }
+  .modal .asn-id-badge { display: inline-block; background: var(--green-light); color: var(--green-dark); font-weight: 700; font-size: 20px; padding: 8px 20px; border-radius: 8px; margin-bottom: 20px; }
 
   /* ---- SPINNER ---- */
   .spinner { width: 17px; height: 17px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  @media (max-width: 1199px) {
+    #linesTable, #linesTable tbody { display: block; }
+    #linesTable colgroup { display: none; }
+    #linesTable thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    #linesTable tbody { display: grid; gap: 16px; }
+    #linesTable tbody tr { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; padding: 16px; border: 1px solid var(--green-border); border-radius: 10px; }
+    #linesTable td { min-width: 0; padding: 0; border: 0; }
+    #linesTable tr:hover td { background: transparent; }
+    #linesTable .line-no { grid-column: 1 / -1; width: auto; min-height: 36px; padding-right: 44px; text-align: left; font-weight: 600; color: var(--green); }
+    #linesTable .line-no::before { content: 'รายการที่ '; }
+    #linesTable td:last-child { position: absolute; top: 14px; right: 16px; }
+    #linesTable .line-field-label { position: static; width: auto; height: auto; margin: 0 0 5px; overflow: visible; clip-path: none; white-space: normal; }
+    #linesTable input:not([type="checkbox"]) { min-height: 44px; }
+  }
   @media (max-width: 600px) {
     .grid-2 { grid-template-columns: 1fr; }
     .col-span-2 { grid-column: span 1; }
-    .topbar-title { font-size: 13px; }
+    .topbar-title { font-size: 16px; }
   }
   @media (max-width:600px) {
-    .login-card { width:min(360px,calc(100vw - 32px)); padding:28px 22px; }
+    .login-card { width:min(400px,calc(100vw - 32px)); padding:28px 22px; }
     .topbar { height:auto; min-height:56px; padding:12px; gap:12px; flex-wrap:wrap; }
     .form-container { padding:0 12px 40px; margin-top:16px; }
     .section-card,.submit-section { padding:18px 14px; }
-    input:not([type="checkbox"]),select,textarea { font-size:16px; min-height:44px; }
+    #linesTable tbody tr { padding:14px 12px; gap:12px; }
+    #linesTable td:nth-child(2), #linesTable td:nth-child(3), #linesTable td:nth-child(5), #linesTable td:nth-child(11) { grid-column: 1 / -1; }
+    input:not([type="checkbox"]),select,textarea { font-size:18px; min-height:48px; }
     input[type="checkbox"] { min-height:0; width:18px !important; height:18px; }
     .section-header { gap:12px; flex-wrap:wrap; }
     .btn { min-height:40px; }
@@ -213,12 +230,12 @@
   }
 
 .receipts {max-width:1100px;margin:20px auto 48px;padding:22px 26px;background:#fff;border:1px solid #dbe7dc;border-radius:12px;box-shadow:0 2px 8px #28641e08}
-.receipts h2 {font-size:18px;color:var(--green);margin-bottom:8px}.receipts small {color:#667565}
-.receipt-card {border-top:1px solid #edf1ec;padding:14px 0}.receipt-card p {font-size:13px;color:#647062;margin:6px 0}.receipt-actions{display:flex;gap:8px;flex-wrap:wrap}
-#receiptNotice {color:#a23d35;font-size:13px;margin:10px 0}
+.receipts h2 {font-size:22px;color:var(--green);margin-bottom:8px}.receipts small {color:#667565;font-size:15px}
+.receipt-card {border-top:1px solid #edf1ec;padding:14px 0}.receipt-card p {font-size:16px;color:#647062;margin:6px 0}.receipt-actions{display:flex;gap:8px;flex-wrap:wrap}
+#receiptNotice {color:#a23d35;font-size:16px;margin:10px 0}
 @media(max-width:700px){.receipts{margin:14px 12px;padding:18px}}
 </style>
-</head>
+<link rel="stylesheet" href="/assets/speedship-login-20261019.css?v=3"><link rel="icon" type="image/svg+xml" sizes="any" href="/speedship-favicon-20261018.svg"></head>
 <body>
 
 <!-- ==================== LOGIN PAGE ==================== -->
@@ -232,7 +249,7 @@
       </div>
     </div>
 
-    <div class="login-card">
+    <div class="login-card sss-glass-card"><div class="sss-login-brand"><img src="/assets/speedship-logo.png" alt="Speedship Solution"><div><strong>Speedship Solution</strong><span>ASN Customer Portal</span></div></div><span class="eyebrow">CUSTOMER PORTAL</span>
       <h1>เข้าสู่ระบบ</h1>
       <p class="subtitle">กรุณาใช้บัญชีที่ได้รับมอบหมาย</p>
 
@@ -358,27 +375,33 @@
           <button class="btn btn-outline btn-sm" onclick="downloadTemplate()">⬇ ดาวน์โหลด Template</button>
           <span id="uploadResult" class="upload-result"></span>
         </div>
-        <div style="margin-top:8px;font-size:11px;color:var(--gray-hint);line-height:1.6">
+        <div style="margin-top:8px;font-size:14px;color:var(--gray-hint);line-height:1.6">
           <strong>ลำดับ Column:</strong> เลข SKU · ชื่อสินค้า · เลขล็อต · วันหมดอายุ (DD/MM/YYYY) · กว้าง · ยาว · สูง · จำนวน(ลัง) · จำนวน(ชิ้น) · หมายเหตุ
+          <br>วันที่แบบข้อความใช้ DD/MM/YYYY หรือ YYYY-MM-DD เช่น 21/10/2026 หรือ 2026-10-21 · ไม่มีวันหมดอายุใช้ N/A
         </div>
       </div>
 
       <div class="lines-wrap">
         <table id="linesTable">
+          <colgroup>
+            <col style="width:3%"><col style="width:14%"><col style="width:17%"><col style="width:9%">
+            <col style="width:12%"><col style="width:7%"><col style="width:7%"><col style="width:7%">
+            <col style="width:6%"><col style="width:6%"><col style="width:8%"><col style="width:4%">
+          </colgroup>
           <thead>
             <tr>
-              <th style="width:32px">#</th>
-              <th style="min-width:130px">เลข SKU</th>
-              <th style="min-width:150px">ชื่อสินค้า</th>
-              <th style="min-width:100px">เลขล็อต</th>
-              <th style="min-width:118px">วันหมดอายุ<br><span style="font-weight:400;font-size:11px;opacity:.6">DD/MM/YYYY</span></th>
-              <th style="min-width:90px">ความกว้างลัง<br><span style="font-weight:400;opacity:.8">(cm)</span></th>
-              <th style="min-width:90px">ความยาวลัง<br><span style="font-weight:400;opacity:.8">(cm)</span></th>
-              <th style="min-width:90px">ความสูงลัง<br><span style="font-weight:400;opacity:.8">(cm)</span></th>
-              <th style="min-width:80px">จำนวน<br><span style="font-weight:400;opacity:.8">(ลัง)</span></th>
-              <th style="min-width:80px">จำนวน<br><span style="font-weight:400;opacity:.8">(ชิ้น)</span></th>
-              <th style="min-width:96px">หมายเหตุ</th>
-              <th style="width:36px"></th>
+              <th>#</th>
+              <th>เลข SKU</th>
+              <th>ชื่อสินค้า</th>
+              <th>เลขล็อต</th>
+              <th>วันหมดอายุ<br><span style="font-weight:400;font-size:14px;opacity:.6">DD/MM/YYYY</span></th>
+              <th>ความกว้างลัง<br><span style="font-weight:400;opacity:.8">(cm)</span></th>
+              <th>ความยาวลัง<br><span style="font-weight:400;opacity:.8">(cm)</span></th>
+              <th>ความสูงลัง<br><span style="font-weight:400;opacity:.8">(cm)</span></th>
+              <th>จำนวน<br><span style="font-weight:400;opacity:.8">(ลัง)</span></th>
+              <th>จำนวน<br><span style="font-weight:400;opacity:.8">(ชิ้น)</span></th>
+              <th>หมายเหตุ</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="linesBody"></tbody>
@@ -386,7 +409,7 @@
       </div>
       <div class="add-line-bar">
         <button class="btn btn-outline btn-sm" onclick="addLine()">+ เพิ่มรายการ</button>
-        <span style="font-size:12px;color:var(--gray-hint)" id="lineCount">0 รายการ</span>
+        <span style="font-size:15px;color:var(--gray-hint)" id="lineCount">0 รายการ</span>
       </div>
     </div>
 
@@ -574,6 +597,23 @@ function applyRequirementsUI() {
       th.appendChild(star);
     }
   });
+  document.querySelectorAll('#linesBody tr').forEach(updateLineLabels);
+}
+
+function updateLineLabels(row) {
+  LINE_FIELDS.forEach(f => {
+    const input = row.querySelector(`[id^="${f.id}-"]`);
+    if (!input) return;
+    let label = input.parentElement.querySelector('.line-field-label');
+    if (!label) {
+      label = document.createElement('label');
+      label.className = 'line-field-label';
+      label.htmlFor = input.id;
+      input.before(label);
+    }
+    const unit = ['w','l','h'].includes(f.id) ? ' (cm)' : f.id === 'expiry' ? ' (DD/MM/YYYY)' : '';
+    label.textContent = f.label + unit + (isReq(f.key) ? ' *' : '');
+  });
 }
 
 async function doLogin() {
@@ -683,14 +723,14 @@ function addLine() {
     <td class="line-no" id="lineno-${idx}">${getDisplayNo(idx)}</td>
     <td>
       <input list="skuDl-${idx}" id="sku-${idx}" placeholder="พิมพ์/เลือก SKU"
-        oninput="onSKUInput(${idx})" style="min-width:115px">
+        oninput="onSKUInput(${idx})">
       <datalist id="skuDl-${idx}">${getSKUOptions()}</datalist>
     </td>
     <td><input type="text" id="name-${idx}" placeholder="ชื่อสินค้า"></td>
     <td><input type="text" id="lot-${idx}" placeholder="เลขล็อต"></td>
-    <td style="min-width:130px">
+    <td>
       <input type="text" id="expiry-${idx}" placeholder="DD/MM/YYYY" readonly style="width:100%;display:block;background:#fff;cursor:pointer">
-      <label style="font-size:11px;margin-top:3px;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:400;color:var(--gray-hint)">
+      <label style="font-size:14px;margin-top:3px;display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:400;color:var(--gray-hint)">
         <input type="checkbox" id="noexp-${idx}" onchange="toggleNoExp(${idx})" style="width:auto;padding:0;border:none">
         ไม่มีวันหมดอายุ
       </label>
@@ -703,6 +743,7 @@ function addLine() {
     <td><input type="text" id="rmk-${idx}" placeholder="(ถ้ามี)"></td>
     <td><button class="btn btn-danger btn-sm" onclick="removeLine(${idx})" title="ลบ">✕</button></td>`;
   tbody.appendChild(tr);
+  updateLineLabels(tr);
   initFlatpickr(idx);
   updateLineCount();
   document.getElementById(`sku-${idx}`).focus();
@@ -868,16 +909,36 @@ function parseAndFill(data, type, filename) {
     if (type === 'csv') {
       rows = parseCSV(data);
     } else {
-      const wb = XLSX.read(data, { type:'array', cellDates:true });
+      // Read Excel's stored date, not its locale-dependent display (e.g. 10/21/2026).
+      const wb = XLSX.read(data, { type:'array', cellDates:false });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'', raw:false });
+      rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'', raw:false, blankrows:true });
+      if (ws['!ref']) {
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        const date1904 = !!wb.Workbook?.WBProps?.date1904;
+        rows.forEach((row, i) => {
+          const cell = ws[XLSX.utils.encode_cell({ r:range.s.r+i, c:range.s.c+3 })];
+          if (cell?.t === 'n') {
+            try { row[3] = normalizeDate(cell.v, date1904); }
+            catch (err) { throw new Error(`แถว ${range.s.r+i+1}: ${err.message}`); }
+          }
+        });
+      }
     }
     let startRow = 0;
     if (rows.length > 0) {
       const firstCell = String(rows[0][0] || '').toLowerCase();
       if (['เลข sku','sku','sku code','sku_code'].includes(firstCell.trim())) startRow = 1;
     }
-    const dataRows = rows.slice(startRow).filter(r => r.some(c => String(c).trim() !== ''));
+    // Validate all dates before replacing any lines already entered in the form.
+    const dataRows = rows.slice(startRow).map((row, i) => ({ row, number:i+startRow+1 }))
+      .filter(({ row }) => row.some(c => String(c).trim() !== ''))
+      .map(({ row, number }) => {
+        const copy = [...row];
+        try { copy[3] = normalizeDate(row[3]); }
+        catch (err) { throw new Error(`แถว ${number}: ${err.message}`); }
+        return copy;
+      });
     if (dataRows.length > 200) throw new Error('นำเข้าได้สูงสุด 200 รายการ');
     if (dataRows.length === 0) throw new Error('ไม่พบข้อมูลในไฟล์');
 
@@ -955,27 +1016,36 @@ function parseCSV(text) {
   return rows;
 }
 
-function normalizeDate(val) {
-  // Returns DD/MM/YYYY for storage
-  if (!val) return '';
-  const s = String(val).trim();
-
-  // YYYY-MM-DD (ISO)
-  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
-
-  // D/M/YY หรือ D/M/YYYY หรือ DD/MM/YY หรือ DD/MM/YYYY
-  const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-  if (dmy) {
-    const dd = dmy[1].padStart(2,'0');
-    const mm = dmy[2].padStart(2,'0');
-    let   yy = dmy[3];
-    if (yy.length === 2) yy = '20' + yy; // 26 → 2026
-    return `${dd}/${mm}/${yy}`;
+function normalizeDate(val, date1904 = false) {
+  // Calendar dates only: never guess month/day order or apply a local timezone.
+  if (val == null || String(val).trim() === '') return '';
+  let day, month, year;
+  if (typeof val === 'number') {
+    if (!Number.isFinite(val) || val < 0 || (!date1904 && Math.floor(val) === 60)) {
+      throw new Error('วันหมดอายุไม่ถูกต้อง');
+    }
+    // Excel's 1900 system includes the fictitious 29 February 1900 (serial 60).
+    const days = Math.floor(val);
+    const epoch = date1904 ? Date.UTC(1904, 0, 1) : Date.UTC(1899, 11, 31);
+    const date = new Date(epoch + (days - (!date1904 && days > 60 ? 1 : 0)) * 86400000);
+    day = date.getUTCDate(); month = date.getUTCMonth()+1; year = date.getUTCFullYear();
+  } else {
+    const s = String(val).trim();
+    if (s.toUpperCase() === 'N/A') return 'N/A';
+    const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const dmy = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2}|\d{4})$/);
+    if (iso) { year = +iso[1]; month = +iso[2]; day = +iso[3]; }
+    else if (dmy) {
+      day = +dmy[1]; month = +dmy[2];
+      year = +(dmy[3].length === 2 ? '20'+dmy[3] : dmy[3]);
+    }
   }
-
-  // ถ้าไม่ตรง pattern ไหนเลย คืนค่าเดิม
-  return s;
+  const check = new Date(Date.UTC(year, month-1, day));
+  if (!(year >= 1900 && year <= 2200) || check.getUTCFullYear() !== year ||
+      check.getUTCMonth()+1 !== month || check.getUTCDate() !== day) {
+    throw new Error('วันหมดอายุไม่ถูกต้อง — ใช้ DD/MM/YYYY หรือ YYYY-MM-DD');
+  }
+  return `${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}`;
 }
 
 function downloadTemplate() {
@@ -983,6 +1053,9 @@ function downloadTemplate() {
   const example = ['SKU001','ชื่อสินค้าตัวอย่าง','LOT-001','31/12/2026','30','20','15','10','120',''];
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([header, example]);
+  // Text formatting keeps dates entered in the template independent of Excel's locale.
+  for (let r = 2; r <= 201; r++) ws[`D${r}`] = { t:'s', v:r === 2 ? example[3] : '', z:'@' };
+  ws['!ref'] = 'A1:J201';
   ws['!cols'] = [16,22,14,20,16,16,16,12,14,16].map(w => ({ wch:w }));
   XLSX.utils.book_append_sheet(wb, ws, 'ASN_Lines');
   XLSX.writeFile(wb, 'ASN_Lines_Template.xlsx');
@@ -1246,7 +1319,13 @@ function updateDirection() {
     fSenderName:outbound?'ชื่อผู้รับ':'ชื่อผู้ส่ง',
     fSenderPhone:outbound?'เบอร์โทรศัพท์ผู้รับ':'เบอร์โทรศัพท์ผู้ส่ง',
   };
-  DOC_FIELDS.forEach(f => { if(labels[f.id]) { f.label=labels[f.id]; document.getElementById(f.id).closest('.field').querySelector('label').textContent=f.label; } });
+  DOC_FIELDS.forEach(f => {
+    if(!labels[f.id])return;
+    f.label=labels[f.id];
+    const input=document.getElementById(f.id);
+    input.closest('.field').querySelector('label').textContent=f.label;
+    if(f.id!=='fArrival')input.placeholder=f.label;
+  });
   applyRequirementsUI();
 }
 function showPage(id) {
