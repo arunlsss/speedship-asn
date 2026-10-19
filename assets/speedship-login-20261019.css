@@ -1,0 +1,64 @@
+/* Shared Speedship login presentation. Authentication and dashboard styles stay scoped. */
+:root{--sss-login-width:440px;--sss-login-height:620px;--sss-login-radius:28px;--sss-login-ink:#f5f7f5;--sss-login-muted:#b5bdb7;--sss-login-green:#a8df9c}
+body:has(#loginPage.active),body:has(.auth-shell),body:has(main.login-page){background:#030404!important}
+#loginPage.active,.auth-shell,main.login-page{box-sizing:border-box;isolation:isolate;position:relative;min-height:100svh;background:#030404!important;color:var(--sss-login-ink);padding:40px 20px!important;display:flex;align-items:center;justify-content:center;overflow-x:clip}
+body.ssp-has-nav #loginPage.active,body.ssp-has-nav .auth-shell{min-height:calc(100svh - 76px)}
+#loginPage.active::before,.auth-shell::before,main.login-page::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 380px 340px at calc(50% - 170px) 28%,rgba(109,156,97,.085),transparent 76%),radial-gradient(ellipse 300px 260px at calc(50% + 180px) 77%,rgba(148,174,153,.045),transparent 76%)}
+#loginPage .login-wrap,.auth-form-panel{width:100%!important;max-width:var(--sss-login-width)!important;margin:0!important;padding:0!important;background:none!important;border:0!important;display:block!important}
+.auth-brand-panel{display:none!important}
+.sss-glass-card,.login-page .login-wrap,.login-page>.login-card{box-sizing:border-box;position:relative;isolation:isolate;width:100%!important;max-width:var(--sss-login-width)!important;min-height:var(--sss-login-height);padding:32px!important;border:1px solid transparent!important;border-radius:var(--sss-login-radius)!important;background:linear-gradient(145deg,rgba(39,43,40,.88),rgba(15,18,16,.94) 48%,rgba(24,29,25,.93)) padding-box,linear-gradient(132deg,rgba(168,223,156,.72),rgba(231,240,232,.44) 22%,rgba(255,255,255,.1) 49%,rgba(221,233,223,.26) 73%,rgba(168,223,156,.6)) border-box!important;box-shadow:0 24px 90px #0009,0 1px 0 #fff2 inset,1px 0 0 #c7efbd16 inset,-1px -1px 0 #d4f1ce10 inset!important;backdrop-filter:blur(30px) saturate(125%);-webkit-backdrop-filter:blur(30px) saturate(125%);color:var(--sss-login-ink)!important;display:flex;flex-direction:column;text-align:left;overflow-wrap:anywhere}
+.sss-glass-card::before,.login-page .login-wrap::before{content:"";position:absolute;inset:1px;z-index:-1;pointer-events:none;border-radius:calc(var(--sss-login-radius) - 2px);background:linear-gradient(125deg,#ffffff08,transparent 30% 76%,#a8df9c06);box-shadow:0 0 0 1px #ffffff04 inset}
+.sss-login-brand,.login-page .login-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:12px!important;margin:0 0 24px!important;padding:0!important;text-align:left!important;min-height:46px}
+.sss-login-brand img,.login-page .login-brand img{display:block;width:46px!important;height:46px!important;object-fit:contain!important;padding:7px;background:#fff;border-radius:12px;filter:none!important;flex:none}
+.sss-login-brand strong,.login-page .login-brand strong{display:block;font-weight:600;font-size:17px;line-height:1.4;color:#f5f7f5!important;letter-spacing:-.2px}
+.sss-login-brand span,.login-page .login-brand span{display:block;font-size:12px!important;line-height:1.6;color:var(--sss-login-muted)!important;margin-top:2px}
+.sss-glass-card .eyebrow,.login-page .eyebrow{display:block;color:var(--sss-login-green)!important;font-size:11px!important;font-weight:600;line-height:1.5;letter-spacing:1.65px;margin:0 0 8px!important}
+.sss-glass-card h1,.sss-glass-card h2,.login-page h1{font-size:30px!important;line-height:1.35!important;letter-spacing:-.7px;font-weight:600!important;color:#f5f7f5!important;margin:0 0 10px!important}
+.sss-glass-card .subtitle,.sss-glass-card .auth-intro,.login-page .login-card>p{font-size:14px!important;line-height:1.65!important;color:var(--sss-login-muted)!important;margin:0 0 24px!important}
+.sss-glass-card .field,.login-page .field{margin:0 0 18px!important;display:block}
+.sss-glass-card label,.sss-glass-card .field-label,.login-page .field>span{display:block;font-size:13px!important;line-height:1.5!important;font-weight:500!important;color:#e0e5e1!important;margin:0 0 8px!important}
+.sss-glass-card input:not([type=checkbox]),.sss-glass-card select,.login-page .field input{box-sizing:border-box;display:block;width:100%!important;height:48px!important;min-height:48px!important;padding:0 14px!important;border:1px solid #ffffff25!important;border-radius:11px!important;background:#ffffff07!important;box-shadow:0 1px 0 #ffffff04 inset;color:#f5f7f5!important;font-size:16px!important;line-height:normal!important;outline:none!important;transition:border-color .18s,box-shadow .18s,background .18s;font-family:inherit}
+.sss-glass-card input::placeholder,.login-page input::placeholder{color:#87918a!important;opacity:1}
+.sss-glass-card input:focus,.sss-glass-card select:focus,.login-page input:focus{border-color:#a8df9c99!important;box-shadow:0 0 0 3px #a8df9c16!important;background:#ffffff0b!important}
+.sss-glass-card input:autofill,.login-page input:autofill{background:#1d251f!important;color:#f5f7f5!important}
+.sss-glass-card input:-webkit-autofill,.login-page input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #1b211d inset!important;-webkit-text-fill-color:#f5f7f5!important;caret-color:#f5f7f5}
+.sss-glass-card .btn-primary,.login-page .button.primary{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;height:48px!important;min-height:48px!important;padding:0 16px!important;border-radius:11px!important;border:1px solid #c8efbf55!important;background:linear-gradient(135deg,#a8df9c,#8fc781)!important;color:#11220f!important;box-shadow:0 1px 0 #ffffff30 inset,0 5px 18px #0003!important;font-size:15px!important;font-weight:600!important;line-height:1.4!important;margin-top:4px;cursor:pointer}
+.sss-glass-card .btn-primary:hover,.login-page .button.primary:hover{filter:brightness(1.06)}
+.sss-glass-card button:disabled,.login-page button:disabled{opacity:.55;cursor:wait}
+.sss-glass-card .text-btn,.login-page .text-button,.sss-glass-card .auth-footer a{color:#c0e6b7!important;background:none!important;border:0!important;font-size:13px!important;line-height:1.6!important;text-decoration:none}
+.sss-glass-card .text-btn:hover,.login-page .text-button:hover,.sss-glass-card .auth-footer a:hover{text-decoration:underline}
+.sss-glass-card .login-note{margin-top:auto!important;padding-top:24px;color:var(--sss-login-muted)!important;font-size:12px!important;line-height:1.7!important;text-align:center}
+.sss-glass-card .alert,.login-page .alert{background:#432722!important;border:1px solid #edb1a64d!important;color:#ffd5cc!important;font-size:13px!important;line-height:1.6!important;border-radius:10px;padding:12px 14px;margin-bottom:18px}
+.login-page .alert.success{background:#203b24!important;color:#d1efca!important;border-color:#a8df9c55!important}
+.sss-glass-card button:focus-visible,.sss-glass-card a:focus-visible,.login-page button:focus-visible{outline:2px solid #a8df9c!important;outline-offset:4px}
+/* Keep each application's existing form states and account controls. */
+.auth-shell .auth-topline{display:block!important;margin:0!important}
+.auth-shell #themeBtn{display:none!important}
+.auth-shell .auth-card{margin:0!important}
+.auth-shell .auth-tabs{display:flex;gap:4px;padding:4px;margin:0 0 22px!important;border:1px solid #ffffff1a;border-radius:11px;background:#0002}
+.auth-shell .auth-tab{flex:1;min-height:34px;padding:6px 10px;border:0;border-radius:7px;background:none;color:#aeb8b0;font-size:13px;font-family:inherit;cursor:pointer}
+.auth-shell .auth-tab.active{background:#ffffff12;color:#f5f7f5;box-shadow:0 1px 4px #0002}
+.auth-shell .auth-form:not(.active){display:none}
+.auth-shell .auth-form.active{display:block}
+.auth-shell #forgotBtn{display:block;margin:16px auto 0}
+.auth-shell .auth-footer{display:flex!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #ffffff16;margin:24px 0 0!important;padding:18px 0 0!important}
+.auth-shell .notice-box,.auth-shell .setup-box{background:#ffffff06!important;border:1px solid #ffffff1c!important;border-radius:12px;color:#e0e5e1!important;padding:14px!important;font-size:13px;line-height:1.6}
+.auth-shell .notice-box small,.auth-shell .notice-box span,.auth-shell .setup-box .muted{color:var(--sss-login-muted)!important}
+.auth-shell .setup-box{margin-top:18px}
+.auth-shell .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.auth-shell #authState:empty{display:none}
+.auth-shell .status-card,.auth-shell .notice-box strong{color:#f5f7f5!important}
+#loginPage .login-logo-bar{display:none!important}
+.login-page .login-wrap{margin:0!important}
+.login-page .login-wrap .login-card{padding:0!important;border:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;width:100%!important;min-height:0;color:#f5f7f5!important}
+.login-page .login-card .muted{color:var(--sss-login-muted)!important;font-size:12px!important;line-height:1.7!important}
+.login-page .login-divider{height:1px;background:#ffffff16!important;border:0!important;margin:22px 0 16px!important}
+.login-page .login-footer{margin:auto 0 0!important;padding-top:22px;font-size:12px!important;line-height:1.7!important;color:var(--sss-login-muted)!important;text-align:center}
+.login-page .button.primary span{margin-left:auto}
+@media(max-width:520px){#loginPage.active,.auth-shell,main.login-page{padding:24px 16px!important;align-items:center}.sss-glass-card,.login-page .login-wrap,.login-page>.login-card{padding:26px 24px!important;min-height:600px;border-radius:24px!important}.sss-glass-card h1,.sss-glass-card h2,.login-page h1{font-size:28px!important}.auth-shell .grid-2{grid-template-columns:1fr;gap:0}}
+@media(max-height:760px){#loginPage.active,.auth-shell,main.login-page{align-items:flex-start}.sss-glass-card .login-note,.login-page .login-footer{margin-top:20px!important}}
+@media(prefers-reduced-transparency:reduce){.sss-glass-card,.login-page .login-wrap{backdrop-filter:none;-webkit-backdrop-filter:none;background:linear-gradient(#171d18,#131814) padding-box,linear-gradient(135deg,#80aa75,#6f7870) border-box!important}}
+
+/* Use the same type metrics in all three login frames. */
+.sss-glass-card,.login-page .login-wrap{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+.sss-glass-card h1,.sss-glass-card h2,.login-page h1,.sss-glass-card input,.login-page input{font-family:inherit!important}
