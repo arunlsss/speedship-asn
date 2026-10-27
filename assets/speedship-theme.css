@@ -1,0 +1,86 @@
+/* Speedship shared brand palette, 2026-10-27. */
+:root, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:#080d0a; --background:var(--bg);
+  --surface:#111a14; --surface-2:#17231b; --surface-3:#203127;
+  --raised:var(--surface-2); --input:#0d1510;
+  --text:#f0f6f1; --ink:var(--text); --text-2:#b1c2b5; --text-3:#91a696;
+  --muted:var(--text-2); --gray-text:var(--text-2); --gray-hint:var(--text-3);
+  --border:#304538; --line:var(--border); --border-strong:#52735b;
+  --brand:#75cf88; --brand-2:#9bdfaa; --accent:var(--brand); --primary:var(--brand);
+  --brand-soft:#1b3524; --accent-soft:var(--brand-soft); --soft:var(--brand-soft);
+  --green:#75cf88; --green-dark:#9bdfaa; --green-mid:#75cf88; --deep:#0c2113;
+  --green-soft:#1b3524; --green-light:#1b3524; --green-pale:#14251b; --green-border:#385e43;
+  --success:#75cf88; --success-soft:#1b3524; --success-bg:#1b3524; --success-bdr:#385e43; --success-txt:#9bdfaa;
+  --danger:#ff9e9e; --red:#ff9e9e; --danger-soft:#3b2025; --red-soft:#3b2025; --danger-bg:#3b2025; --danger-bdr:#81464d;
+  --warning:#f2cc7e; --amber:#f2cc7e; --amber-soft:#352b17;
+  --shadow-sm:0 2px 18px #0003; --shadow:0 16px 48px #0004; --shadow-lg:0 24px 72px #0006;
+  --focus:0 0 0 3px #75cf8840;
+}
+:root[data-theme="light"] {
+  color-scheme:light;
+  --bg:#f2f6f2; --surface:#fff; --surface-2:#edf3ee; --surface-3:#e1ebe3;
+  --input:#fff; --text:#14251a; --text-2:#4c6252; --text-3:#607866;
+  --border:#cbdace; --border-strong:#799d82;
+  --brand:#256b36; --brand-2:#1b5129; --brand-soft:#e1f0e4;
+  --green:#256b36; --green-dark:#1b5129; --green-mid:#256b36;
+  --green-soft:#e1f0e4; --green-light:#e1f0e4; --green-pale:#edf5ee; --green-border:#afcfb7;
+  --success:#256b36; --success-soft:#e1f0e4; --success-bg:#e1f0e4; --success-bdr:#afcfb7; --success-txt:#1b5129;
+  --danger:#b72d3d; --red:#b72d3d; --danger-soft:#fbe8eb; --red-soft:#fbe8eb; --danger-bg:#fbe8eb; --danger-bdr:#e8b4bc;
+  --warning:#815800; --amber:#815800; --amber-soft:#fff0ca;
+  --shadow-sm:0 2px 18px #17351f0a; --shadow:0 16px 48px #17351f12; --shadow-lg:0 24px 72px #17351f24;
+  --focus:0 0 0 3px #256b3633;
+}
+body {background:var(--bg);color:var(--text)}
+::selection {background:#327c45;color:#fff}
+input,select,textarea {accent-color:var(--brand)}
+.brand-mark {background:linear-gradient(145deg,#256b36,#14381d);color:#fff}
+.btn-primary,.btn-success,.primary-small,.submit-button.in,.submit-btn.in {background:#256b36;border-color:#3c8a4e;color:#fff}
+.btn-primary:hover,.btn-success:hover,.primary-small:hover {background:#1d582c}
+.btn-danger,.danger-small,.submit-button.out,.submit-btn.out {background:#a62c3b;color:#fff}
+.theme-icon-btn.active {background:var(--brand-soft);color:var(--brand)}
+.auth-brand-panel {background:linear-gradient(145deg,#080d0a,#14381d)}
+.auth-brand-panel:after {background:radial-gradient(circle,#75cf8833,transparent 68%)}
+.auth-security-list span {color:#9bdfaa}
+.pto-stat strong {color:var(--brand)}
+.pto-help {color:var(--text-2)}
+.pto-status {background:var(--surface-3);color:var(--text-2)}
+.pto-status.pending {background:var(--amber-soft);color:var(--amber)}
+.pto-status.approved {background:var(--green-soft);color:var(--green)}
+.pto-status.rejected,.pto-error {background:var(--danger-soft);color:var(--danger);border-color:var(--danger-bdr)}
+.ssp-header {background:#080d0a;border-bottom-color:#304538}
+.ssp-highlight {background:linear-gradient(90deg,#14381d,#75cf88,#14381d)}
+@media print {
+  body {background:#fff;color:#111}
+  .pto-shell .card,.pto-stat,.pto-table th,.pto-table td {background:#fff;color:#111;box-shadow:none;border-color:#ccc}
+}
+/* Form and management surfaces shared by ASN and FDA. */
+input,select,textarea {background:var(--input)!important;color:var(--text);border-color:var(--border)}
+input:disabled,select:disabled,textarea:disabled {background:var(--surface-2)!important;color:var(--text-3)}
+input:focus,select:focus,textarea:focus {border-color:var(--brand);box-shadow:var(--focus)}
+.login-card,.card,.section,.form-section,.submit-section,.modal,.filter-panel,.stat,.stat-card,.service-card,.table-card,.detail-card,.detail-panel,.detail-modal,.sidebar,.workspace-switch {background:var(--surface);border-color:var(--border);color:var(--text)}
+.topbar {background:#0c2113;color:#f0f6f1;border-bottom:1px solid var(--border)}
+.btn-primary,.btn-success,.primary,.button.primary {background:#256b36;color:#fff;border-color:#3c8a4e}
+.btn-primary:hover,.primary:hover,.button.primary:hover {background:#1b5129}
+.btn-outline,.button.outline,.quiet,.language button,.download {background:var(--surface-2);color:var(--brand);border-color:var(--border)}
+.btn-danger {background:#a62c3b;color:#fff}
+.nav-item {color:var(--text-2)}
+.nav-item.active,.nav-item:hover,.presets button.selected {background:var(--brand-soft);color:var(--brand)}
+.nav-count,.presets,.coming-label,.badge,.service-icon {background:var(--surface-2);color:var(--text-2);border-color:var(--border)}
+.stat strong,.table-link,.breadcrumb span {color:var(--text)}
+th {background:var(--surface-2);color:var(--text-2);border-color:var(--border)}
+td {border-color:var(--border)}
+tr:hover td,.applications-table tr:hover td {background:var(--surface-2)}
+.alert-error,.upload-result.err,.error {background:var(--danger-soft);color:var(--danger);border-color:var(--danger-bdr)}
+.alert-success,.upload-result.ok,.badge.green {background:var(--green-soft);color:var(--green);border-color:var(--green-border)}
+.badge.amber,.notice {background:var(--amber-soft);color:var(--amber);border-color:#796239}
+.badge.red {background:var(--danger-soft);color:var(--danger);border-color:var(--danger-bdr)}
+.service-card>p,.service-description,.service-action,.card-heading p,.stat-card>div,.stat-card>small,.sidebar-foot,.sidebar-foot>span:last-child,.empty p,.nav-label {color:var(--text-2)}
+.modal-overlay {background:#0009}
+.flatpickr-calendar,.flatpickr-months,.flatpickr-month,.flatpickr-weekdays,.flatpickr-current-month .flatpickr-monthDropdown-months {background:var(--surface);color:var(--text);border-color:var(--border)}
+.flatpickr-day,span.flatpickr-weekday,.flatpickr-current-month input.cur-year {color:var(--text)}
+.flatpickr-day:hover,.flatpickr-day:focus {background:var(--surface-3);border-color:var(--border)}
+.flatpickr-day.selected {background:#256b36;border-color:#3c8a4e;color:#fff}
+.flatpickr-day.prevMonthDay,.flatpickr-day.nextMonthDay {color:var(--text-3)}
+.flatpickr-months svg {fill:var(--text)}
+@media print {body,.card,.section,.form-section,.table-card,th,td {background:#fff!important;color:#111!important}}

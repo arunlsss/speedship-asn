@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html data-theme="dark" lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +32,7 @@
     --bg:          #f4f7f3;
   }
 
-  body { font-family: 'Sarabun', sans-serif; background: var(--bg); min-height: 100vh; color: #1a202c; font-size: 15px; }
+  body { font-family: 'Sarabun', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); font-size: 15px; }
 
   /* ---- LAYOUT ---- */
   .page { display: none; }
@@ -52,7 +52,7 @@
   .login-logo-bar .brand-sub  { font-size: 12px; color: var(--gray-hint); }
 
   .login-card {
-    background: #fff;
+    background: var(--surface);
     border-radius: 14px;
     padding: 36px 36px 28px;
     width: 360px;
@@ -68,8 +68,8 @@
   input, select, textarea {
     width: 100%; padding: 9px 12px;
     border: 1.5px solid var(--border); border-radius: 7px;
-    font-size: 14px; font-family: inherit; color: #1a202c;
-    background: #fff; transition: border-color .15s; outline: none;
+    font-size: 14px; font-family: inherit; color: var(--text);
+    background: var(--surface); transition: border-color .15s; outline: none;
   }
   input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(40,100,30,.08); }
   input:disabled, select:disabled { background: #f7faf6; color: var(--gray-hint); cursor: not-allowed; }
@@ -87,7 +87,7 @@
   .btn-primary { background: var(--green); color: #fff; }
   .btn-success { background: #1e6b3a; color: #fff; }
   .btn-danger  { background: var(--danger); color: #fff; }
-  .btn-outline { background: #fff; color: var(--green); border: 1.5px solid var(--green); }
+  .btn-outline { background: var(--surface); color: var(--green); border: 1.5px solid var(--green); }
   .btn-ghost   { background: rgba(40,100,30,.08); color: var(--green); border: none; }
   .btn-sm      { padding: 5px 11px; font-size: 12px; }
   .btn-full    { width: 100%; justify-content: center; }
@@ -116,7 +116,7 @@
   .form-container { max-width: 920px; margin: 24px auto; padding: 0 20px 60px; }
 
   .section-card {
-    background: #fff; border-radius: 10px; padding: 22px 26px;
+    background: var(--surface); border-radius: 10px; padding: 22px 26px;
     margin-bottom: 18px; box-shadow: 0 1px 6px rgba(40,100,30,.07);
     border-left: 3px solid var(--green-border);
   }
@@ -167,7 +167,7 @@
   .upload-result.err { background: var(--danger-bg); color: #922b21; border: 1px solid var(--danger-bdr); display: inline-block; }
 
   /* ---- SUBMIT SECTION ---- */
-  .submit-section { background: #fff; border-radius: 10px; padding: 22px 26px; box-shadow: 0 1px 6px rgba(40,100,30,.07); border-left: 3px solid var(--green-border); }
+  .submit-section { background: var(--surface); border-radius: 10px; padding: 22px 26px; box-shadow: 0 1px 6px rgba(40,100,30,.07); border-left: 3px solid var(--green-border); }
   .submit-row { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
   .submit-row .field { margin-bottom: 0; flex: 1; min-width: 220px; }
 
@@ -180,7 +180,7 @@
   /* ---- MODAL ---- */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.show { display: flex; }
-  .modal { background: #fff; border-radius: 14px; padding: 32px 34px; max-width: 420px; width: 90%; text-align: center; border-top: 4px solid var(--green); }
+  .modal { background: var(--surface); border-radius: 14px; padding: 32px 34px; max-width: 420px; width: 90%; text-align: center; border-top: 4px solid var(--green); }
   .modal-icon { font-size: 44px; margin-bottom: 10px; }
   .modal h2 { font-size: 20px; color: var(--green); margin-bottom: 8px; }
   .modal p  { font-size: 14px; color: var(--gray-text); margin-bottom: 20px; line-height: 1.7; }
@@ -207,7 +207,7 @@
     .modal { max-height:90vh; overflow:auto; }
   }
 </style>
-<link rel="stylesheet" href="/assets/speedship-portal-nav.css?v=20261016"><link rel="apple-touch-icon" href="/assets/speedship-icon.png?v=20261016"><script defer src="/assets/speedship-portal-nav.js?v=20261016" data-management-url="/management/"></script><link rel="icon" type="image/svg+xml" sizes="any" href="/speedship-favicon-20261018.svg"><link rel="stylesheet" href="/assets/speedship-login-20261019.css"></head>
+<link rel="stylesheet" href="/assets/speedship-portal-nav.css?v=20261016"><link rel="apple-touch-icon" href="/assets/speedship-icon.png?v=20261016"><script defer src="/assets/speedship-portal-nav.js?v=20261016" data-management-url="/management/"></script><link rel="icon" type="image/svg+xml" sizes="any" href="/speedship-favicon-20261018.svg"><link rel="stylesheet" href="/assets/speedship-login-20261019.css"><link rel="stylesheet" href="/assets/speedship-theme.css?v=20261027-green-black"></head>
 <body>
 
 <!-- ==================== LOGIN PAGE ==================== -->
@@ -1229,4 +1229,5 @@ function esc(str) {
 </script>
 </body>
 </html>
+
 
